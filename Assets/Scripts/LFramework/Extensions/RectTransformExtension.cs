@@ -17,10 +17,18 @@ public static class RectTransformExtension
     }
 
     /// <summary>
-    /// 获得Rect大小
+    /// 获取Rect的宽
     /// </summary>
-    public static Vector2 GetRectSize(this RectTransform rt)
+    public static float GetRectWidth(this RectTransform rt)
     {
-        return new Vector2(rt.rect.width, rt.rect.height);
+        return rt.rect.width;
+    }
+
+    /// <summary>
+    /// 获取Rect的高
+    /// </summary>
+    public static float GetRectHeight(this RectTransform rt)
+    {
+        return rt.rect.height;
     }
 }
