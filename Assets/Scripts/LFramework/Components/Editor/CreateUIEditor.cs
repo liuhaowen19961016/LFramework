@@ -16,6 +16,13 @@ public class UIEditor
         component.raycastTarget = false;
     }
 
+    [MenuItem("GameObject/LFramework/UI/PolygonImage", priority = 11)]
+    public static void CreatePolygonImage()
+    {
+        GameObject obj = InitUIComponent("PolygonImage");
+        PolygonImage component = obj.AddComponent<PolygonImage>();
+    }
+
     /// <summary>
     /// UI组件初始化
     /// </summary>
