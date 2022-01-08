@@ -2,6 +2,9 @@
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// UI创建编辑器
+/// </summary>
 public class CreateUIEditor
 {
     const int UI_LAYER = 5;

@@ -1,5 +1,8 @@
 ﻿using UnityEditor;
 
+/// <summary>
+/// 圆形Image组件编辑器
+/// </summary>
 [CustomEditor(typeof(CircleImage))]
 [CanEditMultipleObjects]
 public class CircleImageEditor : Editor
@@ -16,7 +19,7 @@ public class CircleImageEditor : Editor
     private void OnEnable()
     {
         m_Sprite = serializedObject.FindProperty("m_Sprite");
-        m_Color= serializedObject.FindProperty("m_Color");
+        m_Color = serializedObject.FindProperty("m_Color");
         m_RaycastTarget = serializedObject.FindProperty("m_RaycastTarget");
         m_RenderType = serializedObject.FindProperty("m_RenderType");
         m_FilledType = serializedObject.FindProperty("m_FilledType");
