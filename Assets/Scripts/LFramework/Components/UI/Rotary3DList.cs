@@ -206,9 +206,9 @@ public class Rotary3DList : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
 
             //更新缩放值
             float scale = GetScale(ratio);
-            Vector2 targetScale = Vector3.one * scale;
+            Vector3 targetScale = Vector3.one * scale;
             float targetScaleOffset = data.go.transform.localScale.x - targetScale.x;
-            data.go.transform.localScale = Vector2.Lerp(data.go.transform.localScale, targetScale, isForce ? 1 : t);
+            data.go.transform.localScale = Vector3.Lerp(data.go.transform.localScale, targetScale, isForce ? 1 : t);
             if (Mathf.Abs(targetScaleOffset) <= 0.01f)
             {
                 data.go.transform.localScale = targetScale;
