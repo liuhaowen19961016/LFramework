@@ -1,32 +1,47 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UIEditor
+public class CreateUIEditor
 {
     const int UI_LAYER = 5;
 
-    [MenuItem("GameObject/LFramework/UI/CircleImage", priority = 10)]
-    public static void CreateCircleImage()
+    [MenuItem("GameObject/LFramework/UI/CommonImage", priority = 10)]
+    public static void CreateCommonImage()
     {
-        GameObject obj = InitUIComponent("CircleImage");
-        CircleImage component = obj.AddComponent<CircleImage>();
-        component.raycastTarget = false;
+        GameObject obj = CreateUIComponent("CommonImage");
+        CommonImage commonImage = obj.AddComponent<CommonImage>();
+        commonImage.raycastTarget = false;
     }
 
-    [MenuItem("GameObject/LFramework/UI/PolygonImage", priority = 11)]
+    [MenuItem("GameObject/LFramework/UI/CircleImage", priority = 11)]
+    public static void CreateCircleImage()
+    {
+        GameObject obj = CreateUIComponent("CircleImage");
+        CircleImage circleImage = obj.AddComponent<CircleImage>();
+        circleImage.raycastTarget = false;
+    }
+
+    [MenuItem("GameObject/LFramework/UI/PolygonImage", priority = 12)]
     public static void CreatePolygonImage()
     {
-        GameObject obj = InitUIComponent("PolygonImage");
-        PolygonImage component = obj.AddComponent<PolygonImage>();
+        GameObject obj = CreateUIComponent("PolygonImage");
+        PolygonCollider2D polygonCollider2D = obj.AddComponent<PolygonCollider2D>();
+        PolygonImage polygonImage = obj.AddComponent<PolygonImage>();
+    }
+
+    [MenuItem("GameObject/LFramework/UI/Rotary3DList", priority = 50)]
+    public static void CreateRotary3DList()
+    {
+        GameObject obj = CreateUIComponent("Rotary3DList");
+        CommonImage commonImage = obj.AddComponent<CommonImage>();
+        Rotary3DList rotary3DList = obj.AddComponent<Rotary3DList>();
     }
 
     /// <summary>
-    /// UI组件初始化
+    /// 创建UI组件
     /// </summary>
-    static GameObject InitUIComponent(string componentName)
+    static GameObject CreateUIComponent(string componentName)
     {
         Transform canvasTrans = GetCanvasRoot();
 
@@ -43,6 +58,7 @@ public class UIEditor
             obj.transform.SetParent(canvasTrans);
         }
         obj.transform.localPosition = Vector3.zero;
+        obj.transform.localScale = Vector3.one;
 
         return obj;
     }
