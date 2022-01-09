@@ -32,32 +32,46 @@ public class Rotary3DList : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
         Vertical,
     }
 
-    public RotaryType rotaryType;//轮转类型
-    public float spacing;//间隔
-    public float maxScale = 1;//最大缩放值
-    public float minScale = 0.5f;//最小缩放值
-    public float t = 0.1f;//缓动插值
-    public Action<ListItemData> OnSetItem;//设置item
-    public Action<PointerEventData> OnDragBegin;//拖拽开始
-    public Action<PointerEventData> OnDragging;//拖拽中
-    public Action<PointerEventData> OnDragEnd;//拖拽结束
+    //轮转类型
+    public RotaryType rotaryType;
+    //间隔
+    public float spacing;
+    //最大缩放值
+    public float maxScale = 1;
+    //最小缩放值
+    public float minScale = 0.5f;
+    //缓动插值
+    public float t = 0.1f;
+    //设置item
+    public Action<ListItemData> OnSetItem;
+    //拖拽开始
+    public Action<PointerEventData> OnDragBegin;
+    //拖拽中
+    public Action<PointerEventData> OnDragging;
+    //拖拽结束
+    public Action<PointerEventData> OnDragEnd;
 
     //中心item下标
     public int CenterIndex
     {
         get { return GetCenterItemIndex(); }
     }
-
-    int m_ItemCount;//列表item总数量
-    float m_TotalValue;//总长度值
-    float m_DeltaValue;//长度值增量
+    //列表item总数量
+    int m_ItemCount;
+    //总长度值
+    float m_TotalValue;
+    //长度值增量
+    float m_DeltaValue;
     GameObject m_Prefab;
     RectTransform m_ItemContainer;
     List<ListItemData> m_ListItemDataList = new List<ListItemData>();
 
+    //是否在拖拽中
     bool m_InDrag;
+    //每次拖拽的起始位置
     float m_BeginPos;
-    List<float> m_InitValueList = new List<float>();//初始每个item的位置长度值
+    //初始每个item的位置长度值
+    List<float> m_InitValueList = new List<float>();
 
     /// <summary>
     /// 设置数据
