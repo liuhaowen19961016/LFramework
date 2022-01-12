@@ -12,6 +12,11 @@ using System.Linq;
 [RequireComponent(typeof(CommonImage))]
 public class Rotary3DList : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
+    protected Rotary3DList()
+    {
+
+    }
+
     /// <summary>
     /// 列表item数据
     /// </summary>

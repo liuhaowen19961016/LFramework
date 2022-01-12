@@ -9,6 +9,11 @@ using System.Collections.Generic;
 [AddComponentMenu("LFramework/UI/CircleImage", 11)]
 public class CircleImage : MaskableGraphic, ICanvasRaycastFilter
 {
+    protected CircleImage()
+    {
+
+    }
+
     /// <summary>
     /// 渲染类型
     /// </summary>

@@ -6,8 +6,13 @@ using UnityEngine.UI;
 /// </summary>
 [AddComponentMenu("LFramework/UI/PolygonImage", 12)]
 [RequireComponent(typeof(PolygonCollider2D))]
-public class PolygonImage : Image
+public class PolygonImage : CommonImage
 {
+    protected PolygonImage()
+    {
+
+    }
+
     /// <summary>
     /// 2D多边形碰撞器
     /// </summary>

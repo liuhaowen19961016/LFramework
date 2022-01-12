@@ -7,5 +7,8 @@ using UnityEngine.UI;
 [AddComponentMenu("LFramework/UI/CommonImage", 10)]
 public class CommonImage : Image
 {
+    protected CommonImage()
+    {
 
+    }
 }
