@@ -3,14 +3,14 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// UI创建编辑器
+/// Hierarchy面板创建UI选项
 /// </summary>
-public class CreateUIEditor
+public static class UIMenuOptions
 {
     const int UI_LAYER = 5;
 
     [MenuItem("GameObject/LFramework/UI/CommonImage", priority = 10)]
-    public static void CreateCommonImage()
+    public static void AddCommonImage()
     {
         GameObject obj = CreateUIComponent("CommonImage");
         CommonImage commonImage = obj.AddComponent<CommonImage>();
@@ -18,7 +18,7 @@ public class CreateUIEditor
     }
 
     [MenuItem("GameObject/LFramework/UI/CircleImage", priority = 11)]
-    public static void CreateCircleImage()
+    public static void AddCircleImage()
     {
         GameObject obj = CreateUIComponent("CircleImage");
         CircleImage circleImage = obj.AddComponent<CircleImage>();
@@ -26,7 +26,7 @@ public class CreateUIEditor
     }
 
     [MenuItem("GameObject/LFramework/UI/PolygonImage", priority = 12)]
-    public static void CreatePolygonImage()
+    public static void AddPolygonImage()
     {
         GameObject obj = CreateUIComponent("PolygonImage");
         PolygonCollider2D polygonCollider2D = obj.AddComponent<PolygonCollider2D>();
@@ -34,7 +34,7 @@ public class CreateUIEditor
     }
 
     [MenuItem("GameObject/LFramework/UI/Rotary3DList", priority = 50)]
-    public static void CreateRotary3DList()
+    public static void AddRotary3DList()
     {
         GameObject obj = CreateUIComponent("Rotary3DList");
         CommonImage commonImage = obj.AddComponent<CommonImage>();
