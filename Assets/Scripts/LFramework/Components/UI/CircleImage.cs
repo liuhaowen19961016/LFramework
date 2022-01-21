@@ -89,16 +89,24 @@ public class CircleImage : MaskableGraphic, ICanvasRaycastFilter
     [Range(0, 1)]
     float m_FillAmount = 1;
 
-    //多少个三角面组成
+    //边数(边数越多圆越平滑)
     [SerializeField]
-    int segements = 100;
+    int m_SideCount = 100;
+    public int SideCount
+    {
+        get
+        {
+            m_SideCount = Mathf.Clamp(m_SideCount, 3, 65000);
+            return m_SideCount;
+        }
+    }
 
-    List<Vector3> vertexCache = new List<Vector3>();
+    List<Vector3> m_VertexList = new List<Vector3>();
 
     protected override void OnPopulateMesh(VertexHelper vh)
     {
         vh.Clear();
-        vertexCache.Clear();
+        m_VertexList.Clear();
 
         switch (m_RenderType)
         {
@@ -111,6 +119,9 @@ public class CircleImage : MaskableGraphic, ICanvasRaycastFilter
         }
     }
 
+    /// <summary>
+    /// 生成普通类型的圆
+    /// </summary>
     void GenerateSimpleSprite(VertexHelper vh)
     {
         Vector4 uv = m_Sprite == null
@@ -126,31 +137,38 @@ public class CircleImage : MaskableGraphic, ICanvasRaycastFilter
         Vector3 posCenter = new Vector2((0.5f - rectTransform.pivot.x) * width, (0.5f - rectTransform.pivot.y) * height);
         float uvScaleX = uvWidth / width;
         float uvScaleY = uvHeight / height;
-        float deltaRad = 2 * Mathf.PI / segements;
+        float deltaRad = 2 * Mathf.PI / SideCount;
 
         float curRad = 0;
-        int vertexCount = segements + 1;
-        vh.AddVert(posCenter, color, uvCenter);
+        int vertexCount = SideCount + 1;
+        int triangleCount = SideCount;
+
+        UIVertex vertex = new UIVertex();
+        vertex.position = posCenter;
+        vertex.color = color;
+        vertex.uv0 = uvCenter;
+        vh.AddVert(vertex);
         for (int i = 0; i < vertexCount - 1; i++)
         {
-            UIVertex vertex = new UIVertex();
             Vector3 posOffset = new Vector3(r * Mathf.Cos(curRad), r * Mathf.Sin(curRad));
             vertex.position = posCenter + posOffset;
             vertex.color = color;
             vertex.uv0 = new Vector2(uvCenter.x + posOffset.x * uvScaleX, uvCenter.y + posOffset.y * uvScaleY);
             vh.AddVert(vertex);
-            vertexCache.Add(vertex.position);
+            m_VertexList.Add(vertex.position);
 
             curRad += deltaRad;
         }
 
-        for (int i = 0; i < vertexCount - 2; i++)
+        for (int i = 0; i < triangleCount; i++)
         {
-            vh.AddTriangle(0, i + 1, i + 2);
+            vh.AddTriangle(0, i + 1, i + 2 >= vertexCount ? 1 : i + 2);
         }
-        vh.AddTriangle(0, segements, 1);
     }
 
+    /// <summary>
+    /// 生成填充类型的圆
+    /// </summary>
     void GenerateFilledSprite(VertexHelper vh)
     {
         Vector4 uv = m_Sprite == null
@@ -166,7 +184,7 @@ public class CircleImage : MaskableGraphic, ICanvasRaycastFilter
         Vector3 posCenter = new Vector2((0.5f - rectTransform.pivot.x) * width, (0.5f - rectTransform.pivot.y) * height);
         float uvScaleX = uvWidth / width;
         float uvScaleY = uvHeight / height;
-        float deltaRad = 2 * Mathf.PI / segements;
+        float deltaRad = 2 * Mathf.PI / SideCount;
 
         switch (m_FilledType)
         {
@@ -174,29 +192,40 @@ public class CircleImage : MaskableGraphic, ICanvasRaycastFilter
                 float quarterRad = 2 * Mathf.PI * 0.25f;
                 float curRad = quarterRad * (int)m_Origin360;
                 int vertexCount = m_FillAmount == 1
-                    ? segements + 1
-                    : Mathf.RoundToInt(segements * m_FillAmount) + 2;
-                vh.AddVert(posCenter, color, uvCenter);
+                    ? SideCount + 1
+                    : Mathf.RoundToInt(SideCount * m_FillAmount) + 2;
+                int triangleCount = Mathf.RoundToInt(SideCount * m_FillAmount);
+
+                UIVertex vertex = new UIVertex();
+                vertex.position = posCenter;
+                vertex.color = color;
+                vertex.uv0 = uvCenter;
+                vh.AddVert(vertex);
                 for (int i = 0; i < vertexCount - 1; i++)
                 {
-                    UIVertex vertex = new UIVertex();
                     Vector3 posOffset = new Vector3(r * Mathf.Cos(curRad), r * Mathf.Sin(curRad));
                     vertex.position = posCenter + posOffset;
                     vertex.color = color;
                     vertex.uv0 = new Vector2(uvCenter.x + posOffset.x * uvScaleX, uvCenter.y + posOffset.y * uvScaleY);
                     vh.AddVert(vertex);
-                    vertexCache.Add(vertex.position);
+                    m_VertexList.Add(vertex.position);
 
                     curRad += m_Clockwise ? -deltaRad : deltaRad;
                 }
 
-                for (int i = 0; i < vertexCount - 2; i++)
-                {
-                    vh.AddTriangle(0, i + 1, i + 2);
-                }
                 if (m_FillAmount == 1)
                 {
-                    vh.AddTriangle(0, segements, 1);
+                    for (int i = 0; i < triangleCount; i++)
+                    {
+                        vh.AddTriangle(0, i + 1, i + 2 >= vertexCount ? 1 : i + 2);
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < triangleCount; i++)
+                    {
+                        vh.AddTriangle(0, i + 1, i + 2);
+                    }
                 }
                 break;
         }
@@ -205,28 +234,63 @@ public class CircleImage : MaskableGraphic, ICanvasRaycastFilter
     public bool IsRaycastLocationValid(Vector2 sp, Camera eventCamera)
     {
         Vector2 localPos;
-        int crossPointCount;
         RectTransformUtility.ScreenPointToLocalPointInRectangle(rectTransform, sp, eventCamera, out localPos);
-        RayCrossing(localPos, out crossPointCount);
+        int crossPointCount = GetCrossPointCount(localPos);
         return crossPointCount % 2 != 0;
     }
 
-    public void RayCrossing(Vector2 localPos, out int crossPointCount)
+    /// <summary>
+    /// 得到交点个数
+    /// </summary>
+    public int GetCrossPointCount(Vector2 localPos)
     {
-        crossPointCount = 0;
-        for (int i = 0; i < vertexCache.Count; i++)
+        int crossPointCount = 0;
+        for (int i = 0; i < m_VertexList.Count; i++)
         {
-            Vector3 p1 = vertexCache[i];
-            Vector3 p2 = vertexCache[(i + 1) % vertexCache.Count];
+            Vector3 p1 = m_VertexList[i];
+            Vector3 p2 = m_VertexList[(i + 1) % m_VertexList.Count];
 
-            if (p1.y == p2.y) continue;
-            if (localPos.y <= Mathf.Min(p1.y, p2.y)) continue;
-            if (localPos.y >= Mathf.Max(p1.y, p2.y)) continue;
-            float crossX = (localPos.y - p1.y) * (p2.x - p1.x) / (p2.y - p1.y) + p1.x;
-            if (crossX >= localPos.x)
+            if (localPos.y < Mathf.Min(p1.y, p2.y)
+                || localPos.y > Mathf.Max(p1.y, p2.y))
+            {
+                continue;
+            }
+            //平行于x轴
+            if (p1.y == p2.y)
+            {
+                if (localPos.x <= p1.x
+                    || localPos.x <= p2.x)
+                {
+                    crossPointCount++;
+                }
+                continue;
+            }
+            //平行于y轴
+            else if (p1.x == p2.x)
+            {
+                if (localPos.x <= p1.x)
+                {
+                    crossPointCount++;
+                }
+                continue;
+            }
+
+            if (GetCrossPointX(p1, p2, localPos) >= localPos.x)
             {
                 crossPointCount++;
             }
         }
+        return crossPointCount;
+    }
+
+    /// <summary>
+    /// 得到交点的x坐标
+    /// </summary>
+    float GetCrossPointX(Vector2 p1, Vector2 p2, Vector2 p)
+    {
+        float k = (p2.y - p1.y) / (p2.x - p1.x);
+        float b = p1.y - k * p1.x;
+        float x = (p.y - b) / k;
+        return x;
     }
 }
