@@ -101,6 +101,7 @@ public class CircleImage : MaskableGraphic, ICanvasRaycastFilter
         }
     }
 
+    //顶点位置列表
     List<Vector3> m_VertexList = new List<Vector3>();
 
     protected override void OnPopulateMesh(VertexHelper vh)
@@ -242,7 +243,7 @@ public class CircleImage : MaskableGraphic, ICanvasRaycastFilter
     /// <summary>
     /// 得到交点个数
     /// </summary>
-    public int GetCrossPointCount(Vector2 localPos)
+    int GetCrossPointCount(Vector2 localPos)
     {
         int crossPointCount = 0;
         for (int i = 0; i < m_VertexList.Count; i++)
