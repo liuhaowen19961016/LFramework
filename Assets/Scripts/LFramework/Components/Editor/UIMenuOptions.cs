@@ -41,6 +41,14 @@ public static class UIMenuOptions
         Rotary3DList rotary3DList = obj.AddComponent<Rotary3DList>();
     }
 
+    [MenuItem("GameObject/LFramework/UI/RadarChart", priority = 51)]
+    public static void AddRadarChart()
+    {
+        GameObject obj = CreateUIComponent("RadarChart");
+        RadarChart radarChart = obj.AddComponent<RadarChart>();
+        radarChart.raycastTarget = false;
+    }
+
     /// <summary>
     /// 创建UI组件
     /// </summary>
