@@ -8,7 +8,6 @@ public static class ColorUtils
     /// <summary>
     /// Color转Hex
     /// </summary>
-    /// alpha:是否有透明度
     public static string Color2Hex(Color color, bool alpha = true)
     {
         string hex;
@@ -26,7 +25,6 @@ public static class ColorUtils
     /// <summary>
     /// Hex转Color
     /// </summary>
-    /// Hex：#000000
     public static Color HexRGB2Color(string hexRGB)
     {
         Color color;
@@ -43,7 +41,7 @@ public static class ColorUtils
     }
 
     /// <summary>
-    /// HSV转Color
+    /// Color转HSV
     /// </summary>
     public static Color HSV2Color(float h, float s, float v)
     {
