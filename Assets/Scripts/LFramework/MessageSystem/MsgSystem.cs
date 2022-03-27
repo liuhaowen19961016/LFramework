@@ -12,9 +12,9 @@ public static class MsgSystem
     static Dictionary<string, List<Delegate>> m_EventDict = new Dictionary<string, List<Delegate>>();
 
     /// <summary>
-    /// 注册事件
+    /// 添加监听
     /// </summary>
-    static void Register(string key, Delegate callBack)
+    static void AddListener(string key, Delegate callBack)
     {
         List<Delegate> eventList;
         if (m_EventDict.TryGetValue(key, out eventList))
@@ -30,9 +30,9 @@ public static class MsgSystem
     }
 
     /// <summary>
-    /// 注销事件
+    /// 移除监听
     /// </summary>
-    static void UnRegister(string key, Delegate callBack)
+    static void RemoveListener(string key, Delegate callBack)
     {
         List<Delegate> eventList;
         if (m_EventDict.TryGetValue(key, out eventList))
@@ -47,72 +47,72 @@ public static class MsgSystem
     }
 
     /// <summary>
-    /// 注销所有事件
+    /// 移除所有监听
     /// </summary>
-    public static void UnRegisterAll()
+    public static void RemoveAllListener()
     {
         m_EventDict.Clear();
     }
 
-    #region 注册事件
+    #region 添加监听
 
-    public static void Register(string key, Action callBack)
+    public static void AddListener(string key, Action callBack)
     {
-        Register(key, (Delegate)callBack);
+        AddListener(key, (Delegate)callBack);
     }
-    public static void Register<T1>(string key, Action<T1> callBack)
+    public static void AddListener<T1>(string key, Action<T1> callBack)
     {
-        Register(key, (Delegate)callBack);
+        AddListener(key, (Delegate)callBack);
     }
-    public static void Register<T1, T2>(string key, Action<T1, T2> callBack)
+    public static void AddListener<T1, T2>(string key, Action<T1, T2> callBack)
     {
-        Register(key, (Delegate)callBack);
+        AddListener(key, (Delegate)callBack);
     }
-    public static void Register<T1, T2, T3>(string key, Action<T1, T2, T3> callBack)
+    public static void AddListener<T1, T2, T3>(string key, Action<T1, T2, T3> callBack)
     {
-        Register(key, (Delegate)callBack);
+        AddListener(key, (Delegate)callBack);
     }
-    public static void Register<T1, T2, T3, T4>(string key, Action<T1, T2, T3, T4> callBack)
+    public static void AddListener<T1, T2, T3, T4>(string key, Action<T1, T2, T3, T4> callBack)
     {
-        Register(key, (Delegate)callBack);
+        AddListener(key, (Delegate)callBack);
     }
-    public static void Register<T1, T2, T3, T4, T5>(string key, Action<T1, T2, T3, T4, T5> callBack)
+    public static void AddListener<T1, T2, T3, T4, T5>(string key, Action<T1, T2, T3, T4, T5> callBack)
     {
-        Register(key, (Delegate)callBack);
-    }
-
-    #endregion
-
-    #region 注销事件
-
-    public static void UnRegister(string key, Action callBack)
-    {
-        UnRegister(key, (Delegate)callBack);
-    }
-    public static void UnRegister<T1>(string key, Action<T1> callBack)
-    {
-        UnRegister(key, (Delegate)callBack);
-    }
-    public static void UnRegister<T1, T2>(string key, Action<T1, T2> callBack)
-    {
-        UnRegister(key, (Delegate)callBack);
-    }
-    public static void UnRegister<T1, T2, T3>(string key, Action<T1, T2, T3> callBack)
-    {
-        UnRegister(key, (Delegate)callBack);
-    }
-    public static void UnRegister<T1, T2, T3, T4>(string key, Action<T1, T2, T3, T4> callBack)
-    {
-        UnRegister(key, (Delegate)callBack);
-    }
-    public static void UnRegister<T1, T2, T3, T4, T5>(string key, Action<T1, T2, T3, T4, T5> callBack)
-    {
-        UnRegister(key, (Delegate)callBack);
+        AddListener(key, (Delegate)callBack);
     }
 
     #endregion
 
-    #region 分发事件
+    #region 移除监听
+
+    public static void RemoveListener(string key, Action callBack)
+    {
+        RemoveListener(key, (Delegate)callBack);
+    }
+    public static void RemoveListener<T1>(string key, Action<T1> callBack)
+    {
+        RemoveListener(key, (Delegate)callBack);
+    }
+    public static void RemoveListener<T1, T2>(string key, Action<T1, T2> callBack)
+    {
+        RemoveListener(key, (Delegate)callBack);
+    }
+    public static void RemoveListener<T1, T2, T3>(string key, Action<T1, T2, T3> callBack)
+    {
+        RemoveListener(key, (Delegate)callBack);
+    }
+    public static void RemoveListener<T1, T2, T3, T4>(string key, Action<T1, T2, T3, T4> callBack)
+    {
+        RemoveListener(key, (Delegate)callBack);
+    }
+    public static void RemoveListener<T1, T2, T3, T4, T5>(string key, Action<T1, T2, T3, T4, T5> callBack)
+    {
+        RemoveListener(key, (Delegate)callBack);
+    }
+
+    #endregion
+
+    #region 分发消息
 
     public static void Dispatch(string key)
     {
