@@ -165,10 +165,10 @@ public class Timer
 /// </summary>
 public class TimerMgr : MonoSingleton<TimerMgr>
 {
-    /// <summary>
-    /// 计时器列表
-    /// </summary>
+    //计时器列表
     List<Timer> m_TimerList = new List<Timer>();
+    //计时器列表(先缓存所有计算器)
+    List<Timer> m_TimerListToAdd = new List<Timer>();
 
     /// <summary>
     /// 注册倒计时
@@ -177,7 +177,7 @@ public class TimerMgr : MonoSingleton<TimerMgr>
        Action onRegister = null, Action onComplete = null, Action<float> onUpdate = null)
     {
         Timer timer = new Timer(duration, isLoop, ignoreTimeScale, onRegister, onComplete, onUpdate);
-        m_TimerList.Add(timer);
+        m_TimerListToAdd.Add(timer);
         return timer;
     }
 
@@ -190,6 +190,8 @@ public class TimerMgr : MonoSingleton<TimerMgr>
         {
             timer.Dispose();
         }
+        m_TimerListToAdd.Clear();
+        m_TimerList.Clear();
     }
 
     /// <summary>
@@ -219,11 +221,16 @@ public class TimerMgr : MonoSingleton<TimerMgr>
     /// </summary>
     void UpdateAll()
     {
+        for (int i = 0; i < m_TimerListToAdd.Count; i++)
+        {
+            m_TimerList.Add(m_TimerListToAdd[i]);
+        }
+        m_TimerListToAdd.Clear();
+
         foreach (var timer in m_TimerList)
         {
             timer.Update();
         }
-
         m_TimerList.RemoveAll(t => t.isCompleted);
     }
 
