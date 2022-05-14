@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using System;
+using System.Collections.Generic;
 
 /// <summary>
-/// 计时器类
+/// 计时器数据
 /// </summary>
-public class Timer
+public class TimerData
 {
     //持续时间
     float duration;
@@ -13,36 +13,39 @@ public class Timer
     bool isLoop;
     //是否忽略时间缩放
     bool ignoreTimeScale;
-    //完成的回调
-    Action onComplete;
-    //更新的回调(每帧)
-    Action<float> onUpdate;
-    //注册的回调
+    //注册时的回调
     Action onRegister;
+    //更新时的回调(每帧)
+    Action<float> onUpdate;
+    //完成时的回调
+    Action onComplete;
 
-    //是否完成计时
-    public bool isCompleted
+    //是否完成(到达目标时间)
+    bool isDone;
+    //开始计时的时间(距游戏开始运行)
+    float beginTime;
+    //上一次更新的时间(距游戏开始运行)
+    float lastUpdateTime;
+    //暂停的总时长
+    float pauseTotalTime;
+    //是否暂停
+    bool isPaused;
+    //是否被销毁
+    bool isDisposed;
+    //是否完成
+    public bool IsCompleted
     {
         get
         {
-            return isDone || isDispose;
+            return isDone || isDisposed;
         }
     }
-    //是否完成计时(时间完成)
-    bool isDone;
-    //是否销毁计时
-    bool isDispose;
-    //是否暂停计时
-    bool isPause;
 
-    //开始计时的时间
-    float beginTime;
-    //上一次更新的时间
-    float lastUpdateTime;
-    //暂停的总时间
-    float pauseTime;
-
-    public Timer(float duration, bool isLoop, bool ignoreTimeScale, Action onRegister, Action onComplete, Action<float> onUpdate)
+    /// <summary>
+    /// 注册计时器
+    /// </summary>
+    public void Register(float duration, bool isLoop, bool ignoreTimeScale,
+        Action onRegister, Action onComplete, Action<float> onUpdate)
     {
         this.duration = duration;
         this.isLoop = isLoop;
@@ -52,17 +55,10 @@ public class Timer
         this.onUpdate = onUpdate;
 
         onRegister?.Invoke();
-        pauseTime = 0;
+
+        pauseTotalTime = 0;
         beginTime = GetWorldTime();
         lastUpdateTime = beginTime;
-    }
-
-    /// <summary>
-    /// 销毁计时器
-    /// </summary>
-    public void Dispose()
-    {
-        isDispose = true;
     }
 
     /// <summary>
@@ -70,7 +66,13 @@ public class Timer
     /// </summary>
     public void Pause()
     {
-        isPause = true;
+        if (isPaused
+            || IsCompleted)
+        {
+            return;
+        }
+
+        isPaused = true;
     }
 
     /// <summary>
@@ -78,51 +80,26 @@ public class Timer
     /// </summary>
     public void Resume()
     {
-        isPause = false;
-    }
-
-    /// <summary>
-    /// 得到剩余时间
-    /// </summary>
-    public float GetTimeLeft()
-    {
-        if (GetWorldTime() >= GetTargetTime())
+        if (!isPaused
+            || IsCompleted)
         {
-            return 0;
+            return;
         }
-        return GetTargetTime() - GetWorldTime();
+
+        isPaused = false;
     }
 
     /// <summary>
-    /// 得到剩余时间比例
+    /// 销毁计时器
     /// </summary>
-    public float GetTimeLeftRatio()
+    public void Dispose()
     {
-        return GetTimeLeft() / duration;
-    }
+        if (IsCompleted)
+        {
+            return;
+        }
 
-    /// <summary>
-    /// 得到当前时间
-    /// </summary>
-    float GetWorldTime()
-    {
-        return ignoreTimeScale ? Time.realtimeSinceStartup : Time.time;
-    }
-
-    /// <summary>
-    /// 得到目标时间
-    /// </summary>
-    float GetTargetTime()
-    {
-        return beginTime + duration + pauseTime;
-    }
-
-    /// <summary>
-    /// 得到时间增量
-    /// </summary>
-    float GetTimeDelta()
-    {
-        return GetWorldTime() - lastUpdateTime;
+        isDisposed = true;
     }
 
     /// <summary>
@@ -130,19 +107,20 @@ public class Timer
     /// </summary>
     public void Update()
     {
-        if (isCompleted)
+        if (IsCompleted)
         {
             return;
         }
-        if (isPause)
+
+        if (isPaused)
         {
-            pauseTime += GetTimeDelta();
+            pauseTotalTime += GetDeltaTime();
             lastUpdateTime = GetWorldTime();
             return;
         }
 
-        lastUpdateTime = GetWorldTime();
         onUpdate?.Invoke(GetTimeLeft());
+        lastUpdateTime = GetWorldTime();
         if (GetWorldTime() >= GetTargetTime())
         {
             onComplete?.Invoke();
@@ -150,7 +128,7 @@ public class Timer
             if (isLoop)
             {
                 beginTime = GetWorldTime();
-                pauseTime = 0;
+                pauseTotalTime = 0;
             }
             else
             {
@@ -158,31 +136,102 @@ public class Timer
             }
         }
     }
+
+    /// <summary>
+    /// 得到剩余时间
+    /// </summary>
+    public float GetTimeLeft()
+    {
+        if (IsCompleted
+            || GetWorldTime() >= GetTargetTime())
+        {
+            return 0;
+        }
+
+        float timeLeft = GetTargetTime() - GetWorldTime();
+        return timeLeft;
+    }
+
+    /// <summary>
+    /// 得到剩余时间比例
+    /// </summary>
+    public float GetTimeLeftRatio()
+    {
+        if (IsCompleted
+            || GetWorldTime() >= GetTargetTime())
+        {
+            return 1;
+        }
+
+        float timeLeftRatio = GetTimeLeft() / duration;
+        return timeLeftRatio;
+    }
+
+    /// <summary>
+    /// 得到时间(距游戏开始运行)
+    /// </summary>
+    float GetWorldTime()
+    {
+        float worldTime = ignoreTimeScale
+            ? Time.realtimeSinceStartup
+            : Time.time;
+        return worldTime;
+    }
+
+    /// <summary>
+    /// 得到目标时间(距游戏开始运行)
+    /// </summary>
+    float GetTargetTime()
+    {
+        float targetTime = beginTime + duration + pauseTotalTime;
+        return targetTime;
+    }
+
+    /// <summary>
+    /// 得到增量时间
+    /// </summary>
+    float GetDeltaTime()
+    {
+        float deltaTime = GetWorldTime() - lastUpdateTime;
+        return deltaTime;
+    }
 }
 
 /// <summary>
-/// 计时器管理类
+/// 计时器管理器
 /// </summary>
 public class TimerMgr : MonoSingleton<TimerMgr>
 {
     //计时器列表
-    List<Timer> m_TimerList = new List<Timer>();
-    //计时器列表(先缓存所有计算器)
-    List<Timer> m_TimerListToAdd = new List<Timer>();
+    List<TimerData> m_TimerList = new List<TimerData>();
+    //计时器列表(先缓存所有计时器)
+    List<TimerData> m_TimerListToAdd = new List<TimerData>();
 
     /// <summary>
-    /// 注册倒计时
+    /// 注册计时器
     /// </summary>
-    public Timer Register(float duration, bool isLoop = false, bool ignoreTimeScale = false,
-       Action onRegister = null, Action onComplete = null, Action<float> onUpdate = null)
+    public TimerData Register(float duration, bool isLoop = false, bool ignoreTimeScale = false
+        , Action onRegister = null, Action onComplete = null, Action onUpdate = null)
     {
-        Timer timer = new Timer(duration, isLoop, ignoreTimeScale, onRegister, onComplete, onUpdate);
-        m_TimerListToAdd.Add(timer);
-        return timer;
+        TimerData data = new TimerData();
+        data.Register(duration, isLoop, ignoreTimeScale, onRegister, onComplete, onUpdate);
+        m_TimerListToAdd.Add(data);
+        return data;
     }
 
     /// <summary>
-    /// 销毁全部计时器
+    /// 注册计时器
+    /// </summary>
+    public TimerData Register(float duration, Action onComplete = null)
+    {
+        TimerData data = new TimerData();
+        data.Register(duration, false, false, null, onComplete, null);
+        m_TimerListToAdd.Add(data);
+        return data;
+    }
+
+    /// <summary>
+    /// 销毁所有计时器
     /// </summary>
     public void DisposeAll()
     {
@@ -195,7 +244,7 @@ public class TimerMgr : MonoSingleton<TimerMgr>
     }
 
     /// <summary>
-    /// 暂停全部计时器
+    /// 暂停所有计时器
     /// </summary>
     public void PauseAll()
     {
@@ -206,7 +255,7 @@ public class TimerMgr : MonoSingleton<TimerMgr>
     }
 
     /// <summary>
-    /// 恢复全部计时器
+    /// 恢复所有计时器
     /// </summary>
     public void ResumeAll()
     {
@@ -217,13 +266,13 @@ public class TimerMgr : MonoSingleton<TimerMgr>
     }
 
     /// <summary>
-    /// 更新全部计时器
+    /// 更新所有计时器
     /// </summary>
-    void UpdateAll()
+    public void UpdateAll()
     {
-        for (int i = 0; i < m_TimerListToAdd.Count; i++)
+        foreach (var timer in m_TimerListToAdd)
         {
-            m_TimerList.Add(m_TimerListToAdd[i]);
+            m_TimerList.Add(timer);
         }
         m_TimerListToAdd.Clear();
 
@@ -231,7 +280,7 @@ public class TimerMgr : MonoSingleton<TimerMgr>
         {
             timer.Update();
         }
-        m_TimerList.RemoveAll(t => t.isCompleted);
+        m_TimerList.RemoveAll(t => t.IsCompleted);
     }
 
     private void Update()
