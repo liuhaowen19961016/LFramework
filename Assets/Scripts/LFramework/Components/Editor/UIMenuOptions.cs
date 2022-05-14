@@ -33,22 +33,6 @@ public static class UIMenuOptions
         PolygonImage polygonImage = obj.AddComponent<PolygonImage>();
     }
 
-    [MenuItem("GameObject/LFramework/UI/Rotary3DList", priority = 50)]
-    public static void AddRotary3DList()
-    {
-        GameObject obj = CreateUIComponent("Rotary3DList");
-        CommonImage commonImage = obj.AddComponent<CommonImage>();
-        Rotary3DList rotary3DList = obj.AddComponent<Rotary3DList>();
-    }
-
-    [MenuItem("GameObject/LFramework/UI/RadarChart", priority = 51)]
-    public static void AddRadarChart()
-    {
-        GameObject obj = CreateUIComponent("RadarChart");
-        RadarChart radarChart = obj.AddComponent<RadarChart>();
-        radarChart.raycastTarget = false;
-    }
-
     /// <summary>
     /// 创建UI组件
     /// </summary>
