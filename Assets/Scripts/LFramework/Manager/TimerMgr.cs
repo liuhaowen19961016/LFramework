@@ -211,7 +211,7 @@ public class TimerMgr : MonoSingleton<TimerMgr>
     /// 注册计时器
     /// </summary>
     public TimerData Register(float duration, bool isLoop = false, bool ignoreTimeScale = false
-        , Action onRegister = null, Action onComplete = null, Action onUpdate = null)
+        , Action onRegister = null, Action onComplete = null, Action<float> onUpdate = null)
     {
         TimerData data = new TimerData();
         data.Register(duration, isLoop, ignoreTimeScale, onRegister, onComplete, onUpdate);
