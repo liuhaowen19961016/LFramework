@@ -7,7 +7,6 @@ using System;
 /// <summary>
 /// 雷达图组件
 /// </summary>
-[AddComponentMenu("LFramework/UI/RadarChart", 51)]
 public class RadarChart : MaskableGraphic
 {
     protected RadarChart()

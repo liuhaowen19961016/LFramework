@@ -8,7 +8,6 @@ using System.Linq;
 /// <summary>
 /// 仿3D轮转图组件
 /// </summary>
-[AddComponentMenu("LFramework/UI/Rotary3DList", 50)]
 [RequireComponent(typeof(CommonImage))]
 public class Rotary3DList : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
