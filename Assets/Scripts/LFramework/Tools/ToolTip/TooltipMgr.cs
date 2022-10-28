@@ -59,7 +59,7 @@ public class TooltipMgr : MonoSingleton<TooltipMgr>
 
     private void Update()
     {
-        if (Input.GetMouseButton(0))
+        if (Input.GetMouseButtonDown(0))
         {
             for (int i = m_TooltipList.Count - 1; i >= 0; i--)
             {
