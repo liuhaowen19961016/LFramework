@@ -241,7 +241,7 @@ public class TimerMgr : MonoSingleton<TimerMgr>
     /// <summary>
     /// 注册计时器
     /// </summary>
-    public TimerTask Register(float duration, ETimerUnitType unitType = ETimerUnitType.Second, int loopCount = -1, bool ignoreTimeScale = false
+    public TimerTask Register(float duration, ETimerUnitType unitType = ETimerUnitType.Second, int loopCount = 1, bool ignoreTimeScale = false
         , Action onRegister = null, Action onComplete = null, Action<float> onUpdate = null)
     {
         TimerTask task = new TimerTask();
