@@ -13,9 +13,10 @@ public class Item_Tooltip : MonoBehaviour
     public RectTransform rect_pos;
     public RectTransform rect_bg;
     public RectTransform rect_arrow;
+    public RectTransform rect_normal;
     public RectTransform rect_custom;
-
-    const int maxWidth = 500;
+    public RectTransform rect_sv_normal;
+    public RectTransform rect_sv_custom;
 
     TooltipData m_Data;//当前提示框的数据
     public TooltipData Data
@@ -24,10 +25,10 @@ public class Item_Tooltip : MonoBehaviour
     }
 
     Canvas m_UICanvas;//UI画布
-    public float[] m_ShowRectBorder = new float[4];//显示区域边界（上下左右）
+    float[] m_ShowRectBorder = new float[4];//显示区域边界（上下左右）
 
-    TimerData m_AutoCloseTimer;//自动关闭的计时器
-
+    TimerTask m_AutoCloseTimer;//自动关闭的计时器
+    TimerTask m_SetScrollTimer;//设置滑动条计时器
 
     /// <summary>
     /// 设置数据
@@ -47,7 +48,9 @@ public class Item_Tooltip : MonoBehaviour
 
         if (m_Data.isAutoClose)
         {
-            m_AutoCloseTimer = TimerMgr.Ins.Register(m_Data.autoCloseSec, false, false, null, () => TooltipMgr.Ins.Close(this));
+            m_AutoCloseTimer = TimerMgr.Ins.Register(m_Data.autoCloseSec,
+                onComplete: () => TooltipMgr.Ins.Close(this)
+                );
         }
     }
 
@@ -58,27 +61,91 @@ public class Item_Tooltip : MonoBehaviour
     {
         if (m_Data.contentType == TooltipData.EContentType.Normal)
         {
+            rect_sv_normal.GetComponent<ScrollRect>().elasticity = 0;
             txt_content.text = m_Data.content;
-            if (txt_content.preferredWidth > maxWidth)
+            if (txt_content.preferredWidth > m_Data.maxWidth)
             {
-                txt_content.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, maxWidth);
-                txt_content.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, txt_content.preferredHeight);
+                txt_content.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, m_Data.maxWidth);
+                if (m_Data.canScroll)
+                {
+                    if (txt_content.preferredHeight > m_Data.maxHeight)
+                    {
+                        txt_content.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, m_Data.maxHeight);
+                    }
+                    else
+                    {
+                        txt_content.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, txt_content.preferredHeight);
+                    }
+                }
+                else
+                {
+                    txt_content.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, txt_content.preferredHeight);
+                }
             }
             else
             {
                 txt_content.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, txt_content.preferredWidth);
                 txt_content.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, txt_content.preferredHeight);
             }
+            ClientUtils.SetRectTransformSize(rect_sv_normal, txt_content.rectTransform.rect.size);
+            ClientUtils.SetRectTransformSize(rect_normal, txt_content.rectTransform.rect.size);
             ClientUtils.SetRectTransformSize(rect_bg, txt_content.rectTransform.rect.size + m_Data.margin);
             ClientUtils.SetRectTransformSize(rect_pos, txt_content.rectTransform.rect.size + m_Data.margin);
+            if (m_Data.canScroll)
+            {
+                m_SetScrollTimer = TimerMgr.Ins.Register(0.1f, onComplete:
+                    () =>
+                    {
+                        rect_sv_normal.GetComponent<ScrollRect>().elasticity = 0.1f;
+                        if (m_SetScrollTimer != null)
+                        {
+                            m_SetScrollTimer.Dispose();
+                            m_SetScrollTimer = null;
+                        }
+                    });
+            }
+            else
+            {
+                rect_sv_normal.GetComponent<ScrollRect>().verticalNormalizedPosition = 1;
+                rect_sv_normal.GetComponent<ScrollRect>().enabled = false;
+            }
         }
         else if (m_Data.contentType == TooltipData.EContentType.Custom)
         {
-            m_Data.customGo.transform.SetParent(rect_custom.transform, false);
+            rect_sv_custom.GetComponent<ScrollRect>().elasticity = 0;
+            if (m_Data.canScroll)
+            {
+                if (m_Data.customGoSize.y > m_Data.maxHeight)
+                {
+                    m_Data.customGoSize.y = m_Data.maxHeight;
+                }
+            }
+            rect_sv_custom.GetComponent<ScrollRect>().content = m_Data.customGo.GetComponent<RectTransform>();
+            m_Data.customGo.transform.SetParent(rect_sv_custom.GetComponent<ScrollRect>().viewport.transform, false);
             m_Data.customGo.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
             m_Data.customGo.transform.localScale = Vector3.one;
+            ClientUtils.SetRectTransformSize(rect_sv_custom, m_Data.customGoSize);
+            ClientUtils.SetRectTransformSize(rect_custom, m_Data.customGoSize);
             ClientUtils.SetRectTransformSize(rect_bg, m_Data.customGoSize + m_Data.margin);
             ClientUtils.SetRectTransformSize(rect_pos, m_Data.customGoSize + m_Data.margin);
+            if (m_Data.canScroll)
+            {
+                m_SetScrollTimer = TimerMgr.Ins.Register(0.1f, onComplete:
+                    () =>
+                    {
+                        rect_sv_custom.GetComponent<ScrollRect>().elasticity = 0.1f;
+                        if (m_SetScrollTimer != null)
+                        {
+                            m_SetScrollTimer.Dispose();
+                            m_SetScrollTimer = null;
+                        }
+                    });
+            }
+            else
+            {
+                rect_sv_custom.GetComponent<ScrollRect>().verticalNormalizedPosition = 1;
+                rect_sv_custom.GetComponent<ScrollRect>().enabled = false;
+            }
         }
     }
 
@@ -303,6 +370,11 @@ public class Item_Tooltip : MonoBehaviour
             m_AutoCloseTimer.Dispose();
             m_AutoCloseTimer = null;
         }
+        if (m_SetScrollTimer != null)
+        {
+            m_SetScrollTimer.Dispose();
+            m_SetScrollTimer = null;
+        }
 
         Destroy(gameObject);
     }
@@ -318,6 +390,11 @@ public class Item_Tooltip : MonoBehaviour
         {
             m_AutoCloseTimer.Dispose();
             m_AutoCloseTimer = null;
+        }
+        if (m_SetScrollTimer != null)
+        {
+            m_SetScrollTimer.Dispose();
+            m_SetScrollTimer = null;
         }
 
         Destroy(gameObject);

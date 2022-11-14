@@ -17,7 +17,7 @@ public class TooltipMgr : MonoSingleton<TooltipMgr>
         {
             if (m_ParentRect == null)
             {
-                m_ParentRect = GameObject.Find("null").GetComponent<RectTransform>();
+                m_ParentRect = GameObject.Find("Canvas").GetComponent<RectTransform>();
             }
             return m_ParentRect;
         }
@@ -221,6 +221,33 @@ public class Tooltip
     }
 
     /// <summary>
+    /// 设置最大宽度
+    /// </summary>
+    public Tooltip SetMaxWidth(float maxWidth)
+    {
+        data.maxWidth = maxWidth;
+        return this;
+    }
+
+    /// <summary>
+    /// 设置最大高度
+    /// </summary>
+    public Tooltip SetMaxHeight(float maxHeight)
+    {
+        data.maxHeight = maxHeight;
+        return this;
+    }
+
+    /// <summary>
+    /// 设置是否可以滑动（超出最大高度时自动调整为可滑动）
+    /// </summary>
+    public Tooltip SetCanScroll(bool canScroll)
+    {
+        data.canScroll = canScroll;
+        return this;
+    }
+
+    /// <summary>
     /// 显示
     /// </summary>
     public Tooltip Show()
@@ -272,4 +299,7 @@ public class TooltipData
     public bool isAutoClose = false;//是否自动关闭
     public float autoCloseSec = 3;//自动关闭的秒数
     public Action onClose;//关闭的回调
+    public float maxWidth = 550;//最大宽度
+    public float maxHeight = 400;//最大高度
+    public bool canScroll = false;//是否可以滑动（超出最大高度时自动调整为可滑动）
 }
