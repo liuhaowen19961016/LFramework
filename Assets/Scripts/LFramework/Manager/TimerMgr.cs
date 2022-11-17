@@ -19,20 +19,48 @@ public enum ETimerUnitType
 /// </summary>
 public class TimerTask
 {
-    ETimerUnitType m_UnitType;//单位类型
-    float m_Duration;//持续时间
-    int m_LoopCount;//循环次数（-1代表无限循环）
-    bool m_IgnoreTimeScale;//是否忽略时间缩放
-    Action m_OnRegister;//注册时的回调
-    Action<float> m_OnUpdate;//更新时的回调(每帧)
-    Action m_OnComplete;//完成时的回调
+    private ETimerUnitType m_UnitType;//单位类型
+    public ETimerUnitType UnityType
+    {
+        get { return m_UnitType; }
+    }
+    private float m_Duration;//持续时间
+    public float Duration
+    {
+        get { return m_Duration; }
+    }
+    private int m_LoopCount;//循环次数（-1代表无限循环）
+    public int LoopCount
+    {
+        get { return m_LoopCount; }
+    }
+    private bool m_IgnoreTimeScale;//是否忽略时间缩放
+    public bool IgnoreTimeScale
+    {
+        get { return m_IgnoreTimeScale; }
+    }
+    private Action m_OnRegister;//注册时的回调
+    public Action OnRegister
+    {
+        get { return m_OnRegister; }
+    }
+    private Action<float> m_OnUpdate;//更新时的回调(每帧)
+    public Action<float> OnUpdate
+    {
+        get { return m_OnUpdate; }
+    }
+    private Action m_OnComplete;//完成时的回调
+    public Action OnComplete
+    {
+        get { return m_OnComplete; }
+    }
 
-    float m_TargetTime;//目标时间             
-    float m_LastUpdateTime;//上一次更新的时间
+    private float m_TargetTime;//目标时间             
+    private float m_LastUpdateTime;//上一次更新的时间
 
-    bool m_IsDone;//是否完成(到达目标时间)
-    bool m_IsPaused;//是否暂停
-    bool m_IsDisposed;//是否被销毁
+    private bool m_IsDone;//是否完成(到达目标时间)
+    private bool m_IsPaused;//是否暂停
+    private bool m_IsDisposed;//是否被销毁
     public bool IsCompleted//是否完成
     {
         get
@@ -57,6 +85,17 @@ public class TimerTask
 
         m_OnRegister?.Invoke();
 
+        float curTime = GetWorldTime();
+        m_LastUpdateTime = curTime;
+        m_TargetTime = curTime + m_Duration;
+    }
+
+    /// <summary>
+    /// 重新设置持续时间
+    /// </summary>
+    public void ResetDuration(float duration)
+    {
+        m_Duration = duration;
         float curTime = GetWorldTime();
         m_LastUpdateTime = curTime;
         m_TargetTime = curTime + m_Duration;
@@ -235,8 +274,8 @@ public class TimerTask
 /// </summary>
 public class TimerMgr : MonoSingleton<TimerMgr>
 {
-    List<TimerTask> m_TaskList = new List<TimerTask>();//计时器任务列表 
-    List<TimerTask> m_TaskListToAdd = new List<TimerTask>();//计时器任务列表(先缓存所有计时器)
+    private List<TimerTask> m_TaskList = new List<TimerTask>();//计时器任务列表 
+    private List<TimerTask> m_TaskListToAdd = new List<TimerTask>();//计时器任务列表(先缓存所有计时器)
 
     /// <summary>
     /// 注册计时器
@@ -248,6 +287,22 @@ public class TimerMgr : MonoSingleton<TimerMgr>
         task.Register(duration, unitType, loopCount, ignoreTimeScale, onRegister, onComplete, onUpdate);
         m_TaskListToAdd.Add(task);
         return task;
+    }
+
+    /// <summary>
+    /// 重新设置计时器
+    /// </summary>
+    public void Resetting(float duration, TimerTask task)
+    {
+        if (m_TaskList.Contains(task)
+            || m_TaskListToAdd.Contains(task))
+        {
+            task.ResetDuration(duration);
+        }
+        else
+        {
+            Register(task.Duration, task.UnityType, task.LoopCount, task.IgnoreTimeScale, task.OnRegister, task.OnComplete, task.OnUpdate);
+        }
     }
 
     /// <summary>
