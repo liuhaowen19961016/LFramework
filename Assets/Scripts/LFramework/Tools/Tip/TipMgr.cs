@@ -126,24 +126,24 @@ public class TipMgr : MonoSingleton<TipMgr>
 
         tip.go = go;
         SetInShow(tipType, true);
-        TimerMgr.Ins.Register(QuickShowTime, false, false, null, () =>
-        {
-            if (GetTipQueue(tipType) == null)
-            {
-                TimerMgr.Ins.Register(ShowTime, false, false, null, () =>
-                {
-                    SetInShow(tipType, false);
-                    GameObject.Destroy(tip.go);
-                    OnTipAssetInit(tipType);
-                });
-            }
-            else
-            {
-                SetInShow(tipType, false);
-                GameObject.Destroy(tip.go);
-                OnTipAssetInit(tipType);
-            }
-        });
+        TimerMgr.Ins.Register(QuickShowTime, onComplete: () =>
+         {
+             if (GetTipQueue(tipType) == null)
+             {
+                 TimerMgr.Ins.Register(ShowTime, onComplete: () =>
+                 {
+                     SetInShow(tipType, false);
+                     GameObject.Destroy(tip.go);
+                     OnTipAssetInit(tipType);
+                 });
+             }
+             else
+             {
+                 SetInShow(tipType, false);
+                 GameObject.Destroy(tip.go);
+                 OnTipAssetInit(tipType);
+             }
+         });
     }
 
     /// <summary>

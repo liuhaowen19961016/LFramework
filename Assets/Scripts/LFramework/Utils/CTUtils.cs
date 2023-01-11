@@ -90,14 +90,9 @@ public static class CTUtils
     /// <summary>
     /// 世界坐标转UI坐标
     /// </summary>
-    /// <param name="isUIObj">是否为ui物体</param>
-    public static Vector2 World2UI(bool isUIObj, Vector3 wp, RectTransform rect, Camera uiCamera, Camera worldCamera = null)
+    public static Vector2 World2UI(Vector3 wp, RectTransform rect, Camera uiCamera)
     {
-        if (worldCamera == null)
-        {
-            worldCamera = Camera.main;
-        }
-        Vector2 screenPos = World2Screen(wp, isUIObj ? uiCamera : worldCamera);
+        Vector2 screenPos = World2Screen(wp, uiCamera);
         return Screen2UI(screenPos, rect, uiCamera);
     }
 }
