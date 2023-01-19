@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 748f4674b91d9483eb28fbd1e6f77839, type: 3}
+  m_Name: ABBuildConfig
+  m_EditorClassIdentifier: 
+  m_BuildList:
+  - isEnable: 1
+    path: Assets/AssetBundle/Prefabs
+    filterStr: '*.prefab'
+  - isEnable: 1
+    path: Assets/AssetBundle/Scenes
+    filterStr: '*.unity'
+  - isEnable: 1
+    path: Assets/AssetBundle/Sprites
+    filterStr: '*.png'
+  - isEnable: 1
+    path: Assets/AssetBundle/Materials
+    filterStr: '*.mat'
+  - isEnable: 1
+    path: Assets/AssetBundle/Textures
+    filterStr: '*.png'
+  - isEnable: 1
+    path: Assets/AssetBundle/Sounds
+    filterStr: '*.mp3'

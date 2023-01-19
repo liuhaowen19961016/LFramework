@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 560d6810fd213f24c9345ece451d7da1, type: 3}
+  m_Name: AppBuildConfig
+  m_EditorClassIdentifier: 
+  m_ProductName: test
+  m_CompanyName: igg
+  m_Version: 0.0.1
+  m_BuildNum: 11
+  m_DefineSymbols: debug
+  m_IsDevelopment: 1
+  m_BuildAAB: 1

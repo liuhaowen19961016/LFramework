@@ -1,166 +1,163 @@
 ﻿using UnityEngine;
 using System;
-using System.Collections.Generic;
+using Object = UnityEngine.Object;
+using UnityEngine.SceneManagement;
 
 public interface IAssetService
 {
-    #region 通用
-
     /// <summary>
-    /// 同步加载资源到内存
+    /// 初始化
     /// </summary>
-    T LoadAssetSync<T>(string assetName) where T : UnityEngine.Object;
-
-    /// <summary>
-    /// 异步加载资源到内存
-    /// </summary>
-    void LoadAssetAsync<T>(string assetName, Action<T> onCompleted) where T : UnityEngine.Object;
-
-    #endregion
+    void Init();
 
     #region Scene
 
     /// <summary>
     /// 异步加载场景
     /// </summary>
-    //void LoadSceneAssetAsync(string assetName, bool addictive, bool activateOnLoad, Action onCompleted);
+    void LoadSceneAsync(string assetPath, bool additive, bool activateOnLoad, Action<AsyncLoadSceneAssetCallBackParam> onCompleted);
 
     /// <summary>
-    /// 释放场景
+    /// 卸载场景
     /// </summary>
-    //void UnLoadScene(string scene, bool autoReleaseHandle, Action onCompleted);
+    bool UnLoadScene(Scene scene, Action callback);
 
-    #endregion
+    #endregion Scene
 
     #region GameObject
 
     /// <summary>
-    /// 预加载多个预制体(GameObject)
+    /// 同步实例化GameObject
     /// </summary>
-    void PreLoadPrefab(List<string> prefabNameList, Action<Dictionary<string, GameObject>> onCompleted);
+    GameObject InstantiateSync(string assetPath, Vector3 pos = default, Quaternion rotation = default, Transform parent = null);
 
     /// <summary>
-    /// 实例化已经加载到内存中的GameObject
+    /// 异步实例化GameObject
     /// </summary>
-    GameObject Instantiate(GameObject obj, Vector3 pos = default, Quaternion rotation = default, Transform parent = null);
+    void InstantiateAsync(string assetPath, Action<GameObject> onCompleted, Vector3 pos = default, Quaternion rotation = default, Transform parent = null);
 
     /// <summary>
-    /// 同步加载+实例化GameObject
+    /// 实例化已加载的GameObject对象
     /// </summary>
-    GameObject InstantiateSync(string assetName, Vector3 pos = default, Quaternion rotation = default, Transform parent = null);
+    GameObject Instantiate(GameObject go, Vector3 pos = default, Quaternion rotation = default, Transform parent = null);
 
     /// <summary>
-    /// 异步加载+实例化GameObject
+    /// 同步加载GameObject
     /// </summary>
-    void InstantiateAsync(string assetName, Action<GameObject> onCompleted, Vector3 pos = default, Quaternion rotation = default, Transform parent = null);
+    GameObject LoadGameObjectSync(string assetPath);
 
     /// <summary>
-    /// 释放GameObject
+    /// 异步加载GameObject
     /// </summary>
-    void Release(GameObject go);
+    void LoadGameObjectAsync(string assetPath, Action<GameObject> onCompleted);
 
     /// <summary>
-    /// 延时释放GameObject
+    /// 销毁GameObject
     /// </summary>
-    void Release(GameObject go, float delayTime);
+    void ReleaseGameObject(Object go, float delayTime = 0);
 
-    #endregion
-
-    #region Sprite
-
-    /// <summary>
-    /// 同步加载Sprite
-    /// </summary>
-    Sprite LoadSpriteSync(string assetName);
-
-    /// <summary>
-    /// 异步加载Sprite
-    /// </summary>
-    void LoadSpriteAsync(string assetName, Action<Sprite> onCompleted);
-
-    #endregion
-
-    #region Texture
-
-    /// <summary>
-    /// 同步加载Texture
-    /// </summary>
-    Texture LoadTextureSync(string assetName);
-
-    /// <summary>
-    /// 异步加载Texture
-    /// </summary>
-    void LoadTextureAsync(string assetName, Action<Texture> onCompleted);
-
-    #endregion
-
-    #region AudioClip
-
-    /// <summary>
-    /// 同步加载AudioClip
-    /// </summary>
-    AudioClip LoadAudioClipSync(string assetName);
-
-    /// <summary>
-    /// 异步加载AudioClip
-    /// </summary>
-    void LoadAudioClipAsync(string assetName, Action<AudioClip> onCompleted);
-
-    #endregion
-
-    #region Animation
-
-    /// <summary>
-    /// 同步加载Animation
-    /// </summary>
-    Animation LoadAnimationSync(string assetName);
-
-    /// <summary>
-    /// 异步加载Animation
-    /// </summary>
-    void LoadAnimationAsync(string assetName, Action<Animation> onCompleted);
-
-    #endregion
-
-    #region Material
-
-    /// <summary>
-    /// 同步加载Material
-    /// </summary>
-    Material LoadMaterialSync(string assetName);
-
-    /// <summary>
-    /// 异步加载Material
-    /// </summary>
-    void LoadMaterialAsync(string assetName, Action<Material> onCompleted);
-
-    #endregion
-
-    #region TextAsset
-
-    /// <summary>
-    /// 同步加载TextAsset
-    /// </summary>
-    TextAsset LoadTextAssetSync(string assetName);
-
-    /// <summary>
-    /// 异步加载TextAsset
-    /// </summary>
-    void LoadTextAssetAsync(string assetName, Action<TextAsset> onCompleted);
-
-    #endregion
+    #endregion GameObject
 
     #region Object
 
     /// <summary>
     /// 同步加载Object
     /// </summary>
-    UnityEngine.Object LoadObjectSync(string assetName);
+    Object LoadObjectSync(string assetPath);
 
     /// <summary>
     /// 异步加载Object
     /// </summary>
-    void LoadObjectAsync(string assetName, Action<UnityEngine.Object> onCompleted);
+    void LoadObjectAsync(string assetPath, Action<Object> onCompleted);
 
-    #endregion
+    #endregion Object
+
+    #region Sprite
+
+    /// <summary>
+    /// 同步加载Sprite
+    /// </summary>
+    Sprite LoadSpriteSync(string assetPath);
+
+    /// <summary>
+    /// 异步加载Sprite
+    /// </summary>
+    void LoadSpriteAsync(string assetPath, Action<Sprite> onCompleted);
+
+    #endregion Sprite
+
+    #region Texture
+
+    /// <summary>
+    /// 同步加载Texture
+    /// </summary>
+    Texture LoadTextureSync(string assetPath);
+
+    /// <summary>
+    /// 异步加载Texture
+    /// </summary>
+    void LoadTextureAsync(string assetPath, Action<Texture> onCompleted);
+
+    #endregion Texture
+
+    #region AudioClip
+
+    /// <summary>
+    /// 同步加载AudioClip
+    /// </summary>
+    AudioClip LoadAudioClipSync(string assetPath);
+
+    /// <summary>
+    /// 异步加载AudioClip
+    /// </summary>
+    void LoadAudioClipAsync(string assetPath, Action<AudioClip> onCompleted);
+
+    #endregion AudioClip
+
+    #region Animation
+
+    /// <summary>
+    /// 同步加载Animation
+    /// </summary>
+    Animation LoadAnimationSync(string assetPath);
+
+    /// <summary>
+    /// 异步加载Animation
+    /// </summary>
+    void LoadAnimationAsync(string assetPath, Action<Animation> onCompleted);
+
+    #endregion Animation
+
+    #region Material
+
+    /// <summary>
+    /// 同步加载Material
+    /// </summary>
+    Material LoadMaterialSync(string assetPath);
+
+    /// <summary>
+    /// 异步加载Material
+    /// </summary>
+    void LoadMaterialAsync(string assetPath, Action<Material> onCompleted);
+
+    #endregion Material
+
+    #region TextAsset
+
+    /// <summary>
+    /// 同步加载TextAsset
+    /// </summary>
+    TextAsset LoadTextAssetSync(string assetPath);
+
+    /// <summary>
+    /// 异步加载TextAsset
+    /// </summary>
+    void LoadTextAssetAsync(string assetPath, Action<TextAsset> onCompleted);
+
+    #endregion TextAsset
+
+    /// <summary>
+    /// 卸载资源
+    /// </summary>
+    bool UnloadAsset(Object obj);
 }

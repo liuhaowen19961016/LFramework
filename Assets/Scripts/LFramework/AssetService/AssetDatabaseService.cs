@@ -1,296 +1,108 @@
 ﻿#if UNITY_EDITOR
 
 using System;
-using UnityEngine;
 using UnityEditor;
-using System.Threading;
-using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using Object = UnityEngine.Object;
 
 /// <summary>
-/// 通过AssetDatabase加载资源
+/// AssetDatabase管理
 /// </summary>
-public class AssetDatabaseService : IAssetService
+public partial class AssetDatabaseService : MonoSingleton<AssetDatabaseService>, IAssetService
 {
-    #region 通用
-
     /// <summary>
-    /// 同步加载资源到内存
+    /// 初始化
     /// </summary>
-    public T LoadAssetSync<T>(string assetName)
-        where T : UnityEngine.Object
+    public void Init()
     {
-        string assetPath = "";
-        T asset = AssetDatabase.LoadAssetAtPath<T>(assetPath);
-        if (asset == null)
-        {
-            Debug.LogError("加载资源失败，assetPath：" + assetPath);
-        }
-        return asset;
+
     }
 
     /// <summary>
-    /// 异步加载资源到内存
+    /// 同步加载资源
     /// </summary>
-    public void LoadAssetAsync<T>(string assetName, Action<T> onCompleted)
-         where T : UnityEngine.Object
+    private T LoadAssetSync<T>(string assetPath)
+        where T : Object
     {
-        string assetPath = "";
-        T asset = AssetDatabase.LoadAssetAtPath<T>(assetPath);
-        if (asset == null)
-        {
-            Debug.LogError("加载资源失败，assetPath：" + assetPath);
-        }
-        onCompleted?.Invoke(asset);
-    }
-
-    #endregion
-
-    #region Scene
-
-    #endregion
-
-    #region GameObject
-
-    /// <summary>
-    /// 预加载多个预制体(GameObject)
-    /// </summary>
-    public void PreLoadPrefab(List<string> prefabNameList, Action<Dictionary<string, GameObject>> onCompleted)
-    {
-        Dictionary<string, GameObject> assetDict = new Dictionary<string, GameObject>();
-        int totalCount = prefabNameList.Count;
-        int count = 0;
-        for (int i = 0; i < totalCount; i++)
-        {
-            string assetPath = prefabNameList[i];
-            if (string.IsNullOrEmpty(assetPath))
-            {
-                count++;
-                continue;
-            }
-
-            GameObject asset = LoadAssetSync<GameObject>(assetPath);
-            if (asset != null)
-            {
-                assetDict.Add(assetPath, asset);
-            }
-            count++;
-            if (count >= totalCount)
-            {
-                onCompleted?.Invoke(assetDict);
-            }
-        }
+        T obj = AssetDatabase.LoadAssetAtPath(assetPath, typeof(T)) as T;
+        return obj;
     }
 
     /// <summary>
-    /// 实例化已加载到内存中的GameObject
+    /// 异步加载资源
     /// </summary>
-    public GameObject Instantiate(GameObject asset, Vector3 pos = default, Quaternion rotation = default, Transform parent = null)
+    private void LoadAssetAsync<T>(string assetPath, Action<T> onCompleted)
+        where T : Object
     {
-        if (asset == null)
-        {
-            return null;
-        }
-        GameObject go;
-        if (parent == null)
-        {
-            go = GameObject.Instantiate(asset, pos, rotation);
-        }
-        else
-        {
-            go = GameObject.Instantiate(asset, pos, rotation, parent);
-        }
-        return go;
+        T obj = AssetDatabase.LoadAssetAtPath(assetPath, typeof(T)) as T;
+        onCompleted?.Invoke(obj);
     }
 
     /// <summary>
-    /// 同步加载实例化GameObject
+    /// 卸载资源
     /// </summary>
-    public GameObject InstantiateSync(string assetName, Vector3 pos = default, Quaternion rotation = default, Transform parent = null)
+    public bool UnloadAsset(Object obj)
     {
-        GameObject asset = LoadAssetSync<GameObject>(assetName);
-        if (asset == null)
+        if (obj == null)
         {
-            return null;
+            return false;
         }
 
-        GameObject go = Instantiate(asset, pos, rotation, parent);
-        return go;
+        obj = null;
+        return true;
     }
 
     /// <summary>
-    /// 异步加载实例化GameObject
+    /// 异步加载场景
     /// </summary>
-    public void InstantiateAsync(string assetName, Action<GameObject> onCompleted, Vector3 pos = default, Quaternion rotation = default, Transform parent = null)
+    public void LoadSceneAsync(string assetPath, bool additive, bool activateOnLoad, Action<AsyncLoadSceneAssetCallBackParam> onCompleted)
     {
-        GameObject asset = LoadAssetSync<GameObject>(assetName);
-        if (asset == null)
-        {
-            return;
-        }
-        Thread thread = new Thread(() =>
-        {
-            GameObject go = Instantiate(asset, pos, rotation, parent);
-            onCompleted?.Invoke(go);
-        });
+        throw new NotImplementedException();
     }
 
     /// <summary>
-    /// 立即释放GameObject
+    /// 卸载场景
     /// </summary>
-    public void Release(GameObject go)
+    public bool UnLoadScene(Scene scene, Action callback)
     {
-        GameObject.Destroy(go);
+        return false;
     }
 
-    /// <summary>
-    /// 延迟释放游GameObject
-    /// </summary>
-    public void Release(GameObject go, float delayTime)
+    public GameObject LoadGoSync(string assetPath)
     {
-        GameObject.Destroy(go, delayTime);
+        throw new NotImplementedException();
     }
 
-    #endregion
-
-    #region Sprite
-
-    /// <summary>
-    /// 同步加载Sprite
-    /// </summary>
-    public Sprite LoadSpriteSync(string assetName)
+    public void LoadGoAsync(string assetPath, Action<GameObject> onCompleted)
     {
-        return LoadAssetSync<Sprite>(assetName);
+        throw new NotImplementedException();
     }
 
-    /// <summary>
-    /// 异步加载Sprite
-    /// </summary>
-    public void LoadSpriteAsync(string assetName, Action<Sprite> onCompleted)
+    public GameObject InstantiateSync(string assetPath, Vector3 pos = default, Quaternion rotation = default, Transform parent = null)
     {
-        LoadAssetAsync<Sprite>(assetName, onCompleted);
+        throw new NotImplementedException();
     }
 
-    #endregion
-
-    #region Texture
-
-    /// <summary>
-    /// 同步加载Texture
-    /// </summary>
-    public Texture LoadTextureSync(string assetName)
+    public void InstantiateAsync(string assetPath, Action<GameObject> onCompleted, Vector3 pos = default, Quaternion rotation = default, Transform parent = null)
     {
-        return LoadAssetSync<Texture>(assetName);
+        throw new NotImplementedException();
     }
 
-    /// <summary>
-    /// 异步加载Texture
-    /// </summary>
-    public void LoadTextureAsync(string assetName, Action<Texture> onCompleted)
+    public new GameObject Instantiate(GameObject go, Vector3 pos = default, Quaternion rotation = default, Transform parent = null)
     {
-        LoadAssetAsync<Texture>(assetName, onCompleted);
+        throw new NotImplementedException();
     }
 
-    #endregion
-
-    #region AudioClip
-
-    /// <summary>
-    /// 同步加载AudioClip
-    /// </summary>
-    public AudioClip LoadAudioClipSync(string assetName)
+    public void ReleaseGameObject(GameObject go, float delayTime = 0)
     {
-        return LoadAssetSync<AudioClip>(assetName);
+        throw new NotImplementedException();
     }
 
-    /// <summary>
-    /// 异步加载AudioClip
-    /// </summary>
-    public void LoadAudioClipAsync(string assetName, Action<AudioClip> onCompleted)
+    public void ReleaseGameObject(Object go, float delayTime = 0)
     {
-        LoadAssetAsync<AudioClip>(assetName, onCompleted);
+        throw new NotImplementedException();
     }
-
-    #endregion
-
-    #region Animation
-
-    /// <summary>
-    /// 同步加载Animation
-    /// </summary>
-    public Animation LoadAnimationSync(string assetName)
-    {
-        return LoadAssetSync<Animation>(assetName);
-    }
-
-    /// <summary>
-    /// 异步加载Animation
-    /// </summary>
-    public void LoadAnimationAsync(string assetName, Action<Animation> onCompleted)
-    {
-        LoadAssetAsync<Animation>(assetName, onCompleted);
-    }
-
-    #endregion
-
-    #region Material
-
-    /// <summary>
-    /// 同步加载Material
-    /// </summary>
-    public Material LoadMaterialSync(string assetName)
-    {
-        return LoadAssetSync<Material>(assetName);
-    }
-
-    /// <summary>
-    /// 异步加载Material
-    /// </summary>
-    public void LoadMaterialAsync(string assetName, Action<Material> onCompleted)
-    {
-        LoadAssetAsync<Material>(assetName, onCompleted);
-    }
-
-    #endregion
-
-    #region TextAsset
-
-    /// <summary>
-    /// 同步加载TextAsset
-    /// </summary>
-    public TextAsset LoadTextAssetSync(string assetName)
-    {
-        return LoadAssetSync<TextAsset>(assetName);
-    }
-
-    /// <summary>
-    /// 异步加载TextAsset
-    /// </summary>
-    public void LoadTextAssetAsync(string assetName, Action<TextAsset> onCompleted)
-    {
-        LoadAssetAsync<TextAsset>(assetName, onCompleted);
-    }
-
-    #endregion
-
-    #region Object
-
-    /// <summary>
-    /// 同步加载Object
-    /// </summary>
-    public UnityEngine.Object LoadObjectSync(string assetName)
-    {
-        return LoadAssetSync<UnityEngine.Object>(assetName);
-    }
-
-    /// <summary>
-    /// 异步加载Object
-    /// </summary>
-    public void LoadObjectAsync(string assetName, Action<UnityEngine.Object> onCompleted)
-    {
-        LoadAssetAsync<UnityEngine.Object>(assetName, onCompleted);
-    }
-
-    #endregion
 }
 
 #endif
