@@ -8,11 +8,12 @@ using System;
 public class ObjectPoolMgr : Singleton<ObjectPoolMgr>
 {
     private Dictionary<Type, object> m_ClassObjectPoolDict = new Dictionary<Type, object>();//类对象池缓存
+    private Dictionary<string, GameObjectPool> m_GameObjectPoolDict = new Dictionary<string, GameObjectPool>();//游戏物体对象池缓存
 
     #region 类对象池
 
     /// <summary>
-    /// 得到或创建一个类对象池
+    /// 获取或创建一个类对象池
     /// </summary>
     public ClassObjectPool<T> GetOrCreateClassObjectPool<T>(int capacity)
         where T : class, new()
@@ -43,11 +44,31 @@ public class ObjectPoolMgr : Singleton<ObjectPoolMgr>
 
     #endregion 类对象池
 
+    #region 游戏物体对象池
+
+    /// <summary>
+    /// 获取或创建一个游戏物体对象池
+    /// </summary>
+    public GameObjectPool GetOrCreateGameObjectPool(GameObject prefab, int capacity, Transform parent)
+    {
+        GameObjectPool pool = null;
+        if (!m_GameObjectPoolDict.TryGetValue(prefab.name, out pool))
+        {
+            pool = new GameObjectPool();
+            pool.Init(prefab, capacity, parent);
+            m_GameObjectPoolDict.Add(prefab.name, pool);
+        }
+        return pool;
+    }
+
+    #endregion 游戏物体对象池
+
     /// <summary>
     /// 清空
     /// </summary>
     public void Clear()
     {
         m_ClassObjectPoolDict.Clear();
+        m_GameObjectPoolDict.Clear();
     }
 }
