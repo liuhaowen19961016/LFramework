@@ -85,6 +85,7 @@ public class GameObjectPool
         if (!m_GoList_Active.Contains(go))
         {
             Debug.LogError($"无法放入对象池，此游戏物体不由对象池管理或此游戏物体与池子中的游戏物体不是同一个GameObject，\n此游戏物体：{go.name}，池子中游戏物体：{m_Prefab.name}[pool]");
+            go.GetComponent<PoolObject>()?.Reset();
             GameObject.Destroy(go);
         }
         else
@@ -92,6 +93,7 @@ public class GameObjectPool
             m_GoList_Active.Remove(go);
             if (m_Capacity > 0 && m_GoList_Inactive.Count >= m_Capacity)
             {
+                go.GetComponent<PoolObject>()?.Reset();
                 GameObject.Destroy(go);
             }
             else
