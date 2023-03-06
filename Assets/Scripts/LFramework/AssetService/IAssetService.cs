@@ -54,7 +54,12 @@ public interface IAssetService
     /// <summary>
     /// 销毁GameObject
     /// </summary>
-    void ReleaseGameObject(Object go, float delayTime = 0);
+    void ReleaseGameObject(Object obj, float delayTime = 0);
+
+    /// <summary>
+    /// 立即销毁GameObject
+    /// </summary>
+    void ReleaseGameObjectImmediate(Object obj);
 
     #endregion GameObject
 

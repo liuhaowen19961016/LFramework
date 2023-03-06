@@ -187,8 +187,8 @@ public partial class ABAssetService : MonoSingleton<ABAssetService>, IAssetServi
     /// </summary>
     public GameObject InstantiateSync(string assetPath, Vector3 pos = default, Quaternion rotation = default, Transform parent = null)
     {
-        GameObject go = LoadGameObjectSync(assetPath);
-        return Instantiate(go);
+        GameObject obj = LoadGameObjectSync(assetPath);
+        return Instantiate(obj, pos, rotation, parent);
     }
 
     /// <summary>
@@ -198,7 +198,7 @@ public partial class ABAssetService : MonoSingleton<ABAssetService>, IAssetServi
     {
         LoadGameObjectAsync(assetPath, (obj) =>
         {
-            GameObject go = Instantiate(obj);
+            GameObject go = Instantiate(obj, pos, rotation, parent);
             onCompleted?.Invoke(go);
         });
     }
@@ -212,7 +212,6 @@ public partial class ABAssetService : MonoSingleton<ABAssetService>, IAssetServi
         {
             return null;
         }
-
         return GameObject.Instantiate(go, pos, rotation, parent);
     }
 
@@ -231,6 +230,17 @@ public partial class ABAssetService : MonoSingleton<ABAssetService>, IAssetServi
             {
                 GameObject.Destroy(obj, delayTime);
             }
+        }
+    }
+
+    /// <summary>
+    /// 立即销毁GameObject
+    /// </summary>
+    public void ReleaseGameObjectImmediate(Object obj)
+    {
+        if (obj is GameObject)
+        {
+            GameObject.DestroyImmediate(obj);
         }
     }
 
@@ -318,7 +328,6 @@ public partial class ABAssetService : MonoSingleton<ABAssetService>, IAssetServi
         {
             return false;
         }
-
         CommonAsset tempAsset = null;
         foreach (var v in m_CacheDict_CommonAsset.Values)
         {
@@ -364,7 +373,7 @@ public partial class ABAssetService : MonoSingleton<ABAssetService>, IAssetServi
     }
 
     /// <summary>
-    /// 得到缓存的通用资源
+    /// 获取缓存的通用资源
     /// </summary>
     private CommonAsset GetCacheCommonAsset(string assetPath)
     {

@@ -14,6 +14,7 @@ public partial class AssetDatabaseService
     /// </summary>
     public GameObject LoadGameObjectSync(string assetPath)
     {
+        assetPath = ReconstructPath(assetPath, ".prefab");
         return LoadAssetSync<GameObject>(assetPath);
     }
 
@@ -22,7 +23,11 @@ public partial class AssetDatabaseService
     /// </summary>
     public void LoadGameObjectAsync(string assetPath, Action<GameObject> onCompleted)
     {
-        LoadAssetAsync<GameObject>(assetPath, onCompleted);
+        assetPath = ReconstructPath(assetPath, ".prefab");
+        LoadAssetAsync<GameObject>(assetPath, (param) =>
+        {
+            onCompleted?.Invoke(param == null ? null : param.obj as GameObject);
+        });
     }
 
     /// <summary>
@@ -38,7 +43,10 @@ public partial class AssetDatabaseService
     /// </summary>
     public void LoadObjectAsync(string assetPath, Action<Object> onCompleted)
     {
-        LoadAssetAsync<Object>(assetPath, onCompleted);
+        LoadAssetAsync<Object>(assetPath, (param) =>
+        {
+            onCompleted?.Invoke(param == null ? null : param.obj as Object);
+        });
     }
 
     /// <summary>
@@ -46,6 +54,7 @@ public partial class AssetDatabaseService
     /// </summary>
     public Sprite LoadSpriteSync(string assetPath)
     {
+        assetPath = ReconstructPath(assetPath, ".png");
         return LoadAssetSync<Sprite>(assetPath);
     }
 
@@ -54,7 +63,11 @@ public partial class AssetDatabaseService
     /// </summary>
     public void LoadSpriteAsync(string assetPath, Action<Sprite> onCompleted)
     {
-        LoadAssetAsync<Sprite>(assetPath, onCompleted);
+        assetPath = ReconstructPath(assetPath, ".png");
+        LoadAssetAsync<Sprite>(assetPath, (param) =>
+        {
+            onCompleted?.Invoke(param == null ? null : param.obj as Sprite);
+        });
     }
 
     /// <summary>
@@ -62,6 +75,7 @@ public partial class AssetDatabaseService
     /// </summary>
     public Texture LoadTextureSync(string assetPath)
     {
+        assetPath = ReconstructPath(assetPath, ".png");
         return LoadAssetSync<Texture>(assetPath);
     }
 
@@ -70,7 +84,11 @@ public partial class AssetDatabaseService
     /// </summary>
     public void LoadTextureAsync(string assetPath, Action<Texture> onCompleted)
     {
-        LoadAssetAsync<Texture>(assetPath, onCompleted);
+        assetPath = ReconstructPath(assetPath, ".png");
+        LoadAssetAsync<Texture>(assetPath, (param) =>
+        {
+            onCompleted?.Invoke(param == null ? null : param.obj as Texture);
+        });
     }
 
     /// <summary>
@@ -86,7 +104,10 @@ public partial class AssetDatabaseService
     /// </summary>
     public void LoadAudioClipAsync(string assetPath, Action<AudioClip> onCompleted)
     {
-        LoadAssetAsync<AudioClip>(assetPath, onCompleted);
+        LoadAssetAsync<AudioClip>(assetPath, (param) =>
+        {
+            onCompleted?.Invoke(param == null ? null : param.obj as AudioClip);
+        });
     }
 
     /// <summary>
@@ -94,6 +115,7 @@ public partial class AssetDatabaseService
     /// </summary>
     public Animation LoadAnimationSync(string assetPath)
     {
+        assetPath = ReconstructPath(assetPath, ".anim");
         return LoadAssetSync<Animation>(assetPath);
     }
 
@@ -102,7 +124,11 @@ public partial class AssetDatabaseService
     /// </summary>
     public void LoadAnimationAsync(string assetPath, Action<Animation> onCompleted)
     {
-        LoadAssetAsync<Animation>(assetPath, onCompleted);
+        assetPath = ReconstructPath(assetPath, ".anim");
+        LoadAssetAsync<Animation>(assetPath, (param) =>
+        {
+            onCompleted?.Invoke(param == null ? null : param.obj as Animation);
+        });
     }
 
     /// <summary>
@@ -110,6 +136,7 @@ public partial class AssetDatabaseService
     /// </summary>
     public Material LoadMaterialSync(string assetPath)
     {
+        assetPath = ReconstructPath(assetPath, ".mat");
         return LoadAssetSync<Material>(assetPath);
     }
 
@@ -118,7 +145,11 @@ public partial class AssetDatabaseService
     /// </summary>
     public void LoadMaterialAsync(string assetPath, Action<Material> onCompleted)
     {
-        LoadAssetAsync<Material>(assetPath, onCompleted);
+        assetPath = ReconstructPath(assetPath, ".mat");
+        LoadAssetAsync<Material>(assetPath, (param) =>
+        {
+            onCompleted?.Invoke(param == null ? null : param.obj as Material);
+        });
     }
 
     /// <summary>
@@ -134,7 +165,10 @@ public partial class AssetDatabaseService
     /// </summary>
     public void LoadTextAssetAsync(string assetPath, Action<TextAsset> onCompleted)
     {
-        LoadAssetAsync<TextAsset>(assetPath, onCompleted);
+        LoadAssetAsync<TextAsset>(assetPath, (param) =>
+        {
+            onCompleted?.Invoke(param == null ? null : param.obj as TextAsset);
+        });
     }
 }
 
