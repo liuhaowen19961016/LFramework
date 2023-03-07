@@ -20,7 +20,7 @@ public class ABBuildPanel : EditorWindow
 
     private ABBuildConfig m_BuildConfig;//AssetBundle打包配置
 
-    [MenuItem("打包工具/AssetBundle打包面板", priority = 0)]
+    [MenuItem("打包工具/AssetBundle打包面板", priority = 1)]
     private static void Open()
     {
         EditorWindow window = GetWindow<ABBuildPanel>("AssetBundle打包面板");
