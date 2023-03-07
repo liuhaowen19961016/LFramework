@@ -10,10 +10,10 @@ using UnityEditor;
 /// </summary>
 public static class BuildUtils
 {
-    public const string AppBuildConfigPath = "Assets/Scripts/AppBuild/Editor/AppBuildConfig.asset";//App打包配置的路径
+    public const string AppBuildConfigPath = "Assets/Scripts/LFramework/AppBuild/Editor/AppBuildConfig.asset";//App打包配置的路径
     public static string AppBuildRootPath = Application.dataPath + "/../Build";//App打包后的文件根目录
 
-    public const string ABBuildConfigPath = "Assets/Scripts/AssetBundle/Editor/ABBuildConfig.asset";//AssetBundle打包配置的路径
+    public const string ABBuildConfigPath = "Assets/Scripts/LFramework/AssetBundle/Editor/ABBuildConfig.asset";//AssetBundle打包配置的路径
     private const string ABRootName = "AssetBundles";
     public static string ABBuildRootPath = Application.dataPath + "/../" + ABRootName;//AssetBundle打包后的文件根目录
     public const string FileName_ABAssetsConfigXML = "ABAssetsConfig.xml";//AssetBundle资源配置的文件名称

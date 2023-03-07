@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: AppBuildConfig
   m_EditorClassIdentifier: 
   m_ProductName: test
-  m_CompanyName: igg
+  m_CompanyName: 
   m_Version: 0.0.1
   m_BuildNum: 11
   m_DefineSymbols: debug
