@@ -194,20 +194,12 @@ public class Tooltip
     }
 
     /// <summary>
-    /// 设置是否自动关闭
-    /// </summary>
-    public Tooltip SetIsAutoClose(bool isAutoClose)
-    {
-        data.isAutoClose = isAutoClose;
-        return this;
-    }
-
-    /// <summary>
     /// 设置自动关闭的秒数
     /// </summary>
     public Tooltip SetAutoCloseSec(float autoCloseSec)
     {
         data.autoCloseSec = autoCloseSec;
+		data.isAutoClose = true;
         return this;
     }
 
