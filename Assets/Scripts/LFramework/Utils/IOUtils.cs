@@ -1,5 +1,4 @@
-﻿using UnityEngine;
-using System.IO;
+﻿using System.IO;
 using System.Diagnostics;
 using Debug = UnityEngine.Debug;
 
@@ -22,6 +21,15 @@ public static class IOUtils
     public static bool IsFolder(string path)
     {
         return string.IsNullOrEmpty(Path.GetExtension(path));
+    }
+
+    /// <summary>
+    /// 重新整理路径
+    /// </summary>
+    public static string ReconstructPath(string path)
+    {
+        path = path.Replace('\\', '/').Replace("//", "/");
+        return path;
     }
 
     /// <summary>

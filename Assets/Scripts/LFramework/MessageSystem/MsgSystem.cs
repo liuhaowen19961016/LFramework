@@ -8,38 +8,34 @@ using UnityEngine;
 /// </summary>
 public static class MsgSystem
 {
-    //存所有事件的字典
-    static Dictionary<string, List<Delegate>> m_EventDict = new Dictionary<string, List<Delegate>>();
+    private static Dictionary<string, List<Delegate>> m_EventDict = new Dictionary<string, List<Delegate>>();//存所有事件的字典
+    public static Dictionary<string, List<Delegate>> EventDict
+    {
+        get { return m_EventDict; }
+    }
 
     /// <summary>
     /// 添加监听
     /// </summary>
-    static void AddListener(string key, Delegate callBack)
+    private static void AddListener(string key, Delegate callBack)
     {
-        List<Delegate> eventList;
-        if (m_EventDict.TryGetValue(key, out eventList))
-        {
-            eventList.Add(callBack);
-        }
-        else
+        if (!m_EventDict.TryGetValue(key, out List<Delegate> eventList))
         {
             eventList = new List<Delegate>();
-            eventList.Add(callBack);
             m_EventDict.Add(key, eventList);
         }
+        eventList.Add(callBack);
     }
 
     /// <summary>
     /// 移除监听
     /// </summary>
-    static void RemoveListener(string key, Delegate callBack)
+    private static void RemoveListener(string key, Delegate callBack)
     {
-        List<Delegate> eventList;
-        if (m_EventDict.TryGetValue(key, out eventList))
+        if (m_EventDict.TryGetValue(key, out List<Delegate> eventList))
         {
             eventList.Remove(callBack);
         }
-
         if (eventList.Count == 0)
         {
             m_EventDict.Remove(key);
@@ -81,7 +77,7 @@ public static class MsgSystem
         AddListener(key, (Delegate)callBack);
     }
 
-    #endregion
+    #endregion 添加监听
 
     #region 移除监听
 
@@ -110,14 +106,13 @@ public static class MsgSystem
         RemoveListener(key, (Delegate)callBack);
     }
 
-    #endregion
+    #endregion 移除监听
 
     #region 分发消息
 
     public static void Dispatch(string key)
     {
-        List<Delegate> eventList;
-        if (m_EventDict.TryGetValue(key, out eventList))
+        if (m_EventDict.TryGetValue(key, out List<Delegate> eventList))
         {
             for (int i = 0; i < eventList.Count; i++)
             {
@@ -132,8 +127,7 @@ public static class MsgSystem
 
     public static void Dispatch<T1>(string key, T1 arg1)
     {
-        List<Delegate> eventList;
-        if (m_EventDict.TryGetValue(key, out eventList))
+        if (m_EventDict.TryGetValue(key, out List<Delegate> eventList))
         {
             for (int i = 0; i < eventList.Count; i++)
             {
@@ -148,8 +142,7 @@ public static class MsgSystem
 
     public static void Dispatch<T1, T2>(string key, T1 arg1, T2 arg2)
     {
-        List<Delegate> eventList;
-        if (m_EventDict.TryGetValue(key, out eventList))
+        if (m_EventDict.TryGetValue(key, out List<Delegate> eventList))
         {
             for (int i = 0; i < eventList.Count; i++)
             {
@@ -164,8 +157,7 @@ public static class MsgSystem
 
     public static void Dispatch<T1, T2, T3>(string key, T1 arg1, T2 arg2, T3 arg3)
     {
-        List<Delegate> eventList;
-        if (m_EventDict.TryGetValue(key, out eventList))
+        if (m_EventDict.TryGetValue(key, out List<Delegate> eventList))
         {
             for (int i = 0; i < eventList.Count; i++)
             {
@@ -180,8 +172,7 @@ public static class MsgSystem
 
     public static void Dispatch<T1, T2, T3, T4>(string key, T1 arg1, T2 arg2, T3 arg3, T4 arg4)
     {
-        List<Delegate> eventList;
-        if (m_EventDict.TryGetValue(key, out eventList))
+        if (m_EventDict.TryGetValue(key, out List<Delegate> eventList))
         {
             for (int i = 0; i < eventList.Count; i++)
             {
@@ -196,8 +187,7 @@ public static class MsgSystem
 
     public static void Dispatch<T1, T2, T3, T4, T5>(string key, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5)
     {
-        List<Delegate> eventList;
-        if (m_EventDict.TryGetValue(key, out eventList))
+        if (m_EventDict.TryGetValue(key, out List<Delegate> eventList))
         {
             for (int i = 0; i < eventList.Count; i++)
             {
@@ -210,7 +200,7 @@ public static class MsgSystem
         }
     }
 
-    #endregion
+    #endregion 分发消息
 
     public static void Log()
     {
