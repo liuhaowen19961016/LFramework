@@ -48,7 +48,7 @@ public class MsgSystemEditor : EditorWindow
         if (curToolbarIndex == 0)
         {
             EditorGUILayout.Separator();
-            GUILayout.BeginScrollView(m_ScrollPosition1);
+            m_ScrollPosition1 = GUILayout.BeginScrollView(m_ScrollPosition1);
             foreach (var temp in m_MsgTypeStrs)
             {
                 GUILayout.Label(temp);
@@ -63,7 +63,7 @@ public class MsgSystemEditor : EditorWindow
                 EditorGUILayout.HelpBox("请先运行游戏", MessageType.Warning);
                 return;
             }
-            GUILayout.BeginScrollView(m_ScrollPosition2);
+            m_ScrollPosition2 = GUILayout.BeginScrollView(m_ScrollPosition2);
             foreach (var pairs in MsgSystem.EventDict)
             {
                 GUILayout.Label($"事件名称：{pairs.Key}");
