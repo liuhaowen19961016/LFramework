@@ -31,12 +31,14 @@ public class MsgSystemEditor : EditorWindow
 
     private void OnEnable()
     {
-        Type type = typeof(MsgConst);
-        foreach (var temp in type.GetFields())
+        foreach (var temp in MsgSystemTool.EventClassTypes)
         {
-            if (!m_MsgTypeStrs.Contains(temp.Name))
+            foreach (var fi in temp.GetFields())
             {
-                m_MsgTypeStrs.Add(temp.Name);
+                if (!m_MsgTypeStrs.Contains(fi.Name))
+                {
+                    m_MsgTypeStrs.Add(fi.Name);
+                }
             }
         }
     }

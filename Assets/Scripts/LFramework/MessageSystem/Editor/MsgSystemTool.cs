@@ -10,20 +10,28 @@ using System.Linq;
 /// </summary>
 public class MsgSystemTool
 {
+    public static List<Type> EventClassTypes = new List<Type>()//所有事件类
+        {
+            typeof(MsgConst),
+        };
+
     [MenuItem("工具/事件系统/检查事件绑定关系", priority = 1)]
     private static void CheckMsgBind()
     {
-        string addListenerMethodName = "AddListener";
-        string removeListenerMethodName = "RemoveListener";
+        string addListenerMethod = "AddListener";
+        string removeListenerMethod = "RemoveListener";
+
         Dictionary<string, Dictionary<string, int>> checkDict = new Dictionary<string, Dictionary<string, int>>();//<脚本名，<事件名称-回调函数参数字符串-回调函数名，绑定数量>>
 
         List<string> msgTypeStrs = new List<string>();
-        Type type = typeof(MsgConst);
-        foreach (var temp in type.GetFields())
+        foreach (var temp in EventClassTypes)
         {
-            if (!msgTypeStrs.Contains(temp.Name))
+            foreach (var fi in temp.GetFields())
             {
-                msgTypeStrs.Add(temp.Name);
+                if (!msgTypeStrs.Contains(fi.Name))
+                {
+                    msgTypeStrs.Add(fi.Name);
+                }
             }
         }
         //遍历所有脚本检查事件绑定关系
@@ -43,21 +51,20 @@ public class MsgSystemTool
                 {
                     string line = lines[j];//每行内容
                     line = line.Replace(" ", "");
+                    int leftBracketIndex = line.IndexOf("(");
+                    int rightBracketIndex = line.IndexOf(")");
                     for (int k = 0; k < msgTypeStrs.Count; k++)
                     {
-                        //事件名称
-                        string msgTypeStr = msgTypeStrs[k];
-                        if (line.Contains($"MsgConst.{msgTypeStr}") && line.Contains(addListenerMethodName))
+                        string msgTypeStr = msgTypeStrs[k];//事件名称
+                        bool containMsgTypeStr = EventClassTypes.Any(t => line.Contains($"{t.Name}.{msgTypeStr}"));
+                        if (containMsgTypeStr && line.Contains(addListenerMethod))
                         {
-                            if (line.Contains("//") && line.IndexOf("//") < line.IndexOf(addListenerMethodName))
+                            if (line.Contains("//") && line.IndexOf("//") < line.IndexOf(addListenerMethod))
                             {
                                 continue;
                             }
-                            //回调函数参数字符串
-                            string callbackParamStr = line.Substring(line.IndexOf(addListenerMethodName) + addListenerMethodName.Length, line.IndexOf("(") - (line.IndexOf(addListenerMethodName) + addListenerMethodName.Length));
-                            //回调函数名
-                            string containCallbackNameStr = line.Split(',')[line.Split(',').Length - 1];
-                            string callbackName = line.Substring(line.IndexOf(containCallbackNameStr), line.IndexOf(");") - line.IndexOf(containCallbackNameStr));
+                            string callbackParamStr = line.Substring(line.IndexOf(addListenerMethod) + addListenerMethod.Length, leftBracketIndex - (line.IndexOf(addListenerMethod) + addListenerMethod.Length));//回调函数参数字符串
+                            string callbackName = line.Substring(leftBracketIndex + 1, rightBracketIndex - leftBracketIndex - 1).Split(',')[1];//回调函数名
                             string infoStr = $"{msgTypeStr}-{callbackParamStr}-{callbackName}";
                             if (!checkDict.TryGetValue(assetName, out Dictionary<string, int> infoStr2BindCount))
                             {
@@ -70,17 +77,14 @@ public class MsgSystemTool
                             }
                             infoStr2BindCount[infoStr]++;
                         }
-                        else if (line.Contains($"MsgConst.{msgTypeStr}") && line.Contains(removeListenerMethodName))
+                        else if (containMsgTypeStr && line.Contains(removeListenerMethod))
                         {
-                            if (line.Contains("//") && line.IndexOf("//") < line.IndexOf(removeListenerMethodName))
+                            if (line.Contains("//") && line.IndexOf("//") < line.IndexOf(removeListenerMethod))
                             {
                                 continue;
                             }
-                            //回调函数参数字符串
-                            string callbackParamStr = line.Substring(line.IndexOf(removeListenerMethodName) + removeListenerMethodName.Length, line.IndexOf("(") - (line.IndexOf(removeListenerMethodName) + removeListenerMethodName.Length));
-                            //回调函数名
-                            string containCallbackNameStr = line.Split(',')[line.Split(',').Length - 1];
-                            string callbackName = line.Substring(line.IndexOf(containCallbackNameStr), line.IndexOf(");") - line.IndexOf(containCallbackNameStr));
+                            string callbackParamStr = line.Substring(line.IndexOf(removeListenerMethod) + removeListenerMethod.Length, leftBracketIndex - (line.IndexOf(removeListenerMethod) + removeListenerMethod.Length));//回调函数参数字符串
+                            string callbackName = line.Substring(leftBracketIndex + 1, rightBracketIndex - leftBracketIndex - 1).Split(',')[1];//回调函数名
                             string infoStr = $"{msgTypeStr}-{callbackParamStr}-{callbackName}";
                             if (!checkDict.TryGetValue(assetName, out Dictionary<string, int> infoStr2BindCount))
                             {
