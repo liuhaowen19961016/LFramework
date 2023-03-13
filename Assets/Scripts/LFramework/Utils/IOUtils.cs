@@ -43,39 +43,66 @@ public static class IOUtils
     }
 
     /// <summary>
-    /// 拷贝单个文件
+    /// 拷贝文件
     /// </summary>
-    public static void CopySingleFile(string srcFilePath, string destFilePath)
+    /// destPath：目标文件路径或目标文件夹路径
+    public static bool CopyFile(string srcFilePath, string destPath, bool destroySrcFile = false, bool overweite = true)
     {
-        if (string.IsNullOrEmpty(Path.GetExtension(srcFilePath)))
+        if (!IsFile(srcFilePath))
         {
-            Debug.LogError($"必须为文件路径，srcFilePath：{srcFilePath}");
-            return;
+            Debug.LogError($"原始文件路径有误，srcFilePath：{srcFilePath}");
+            return false;
         }
-        if (string.IsNullOrEmpty(Path.GetExtension(destFilePath)))
+        if (!File.Exists(srcFilePath))
         {
-            Debug.LogError($"必须为文件路径，destFilePath：{destFilePath}");
-            return;
+            Debug.LogError($"原始文件不存在，srcFilePath：{srcFilePath}");
+            return false;
         }
-        string destDirPath = destFilePath.Substring(0, destFilePath.IndexOf(Path.GetFileName(destFilePath)) - 1);
+        string destFilePath = "";
+        string destDirPath = "";
+        if (IsFile(destPath))
+        {
+            destFilePath = destPath;
+            destDirPath = Path.GetDirectoryName(destPath);
+        }
+        else
+        {
+            destFilePath = Path.Combine(destPath, Path.GetFileName(srcFilePath));
+            destDirPath = destPath;
+        }
         if (!Directory.Exists(destDirPath))
         {
             Directory.CreateDirectory(destDirPath);
         }
-        File.Copy(srcFilePath, destFilePath, true);
+        File.Copy(srcFilePath, destFilePath, overweite);
+        if (destroySrcFile)
+        {
+            File.Delete(srcFilePath);
+        }
+        return true;
     }
 
     /// <summary>
-    /// 拷贝文件
+    /// 拷贝文件夹
     /// </summary>
-    public static void CopyFile(string srcDirPath, string destDirPath)
+    public static bool CopyFolder(string srcDirPath, string destDirPath, bool containRootDir = true, bool overweite = true)
     {
+        if (!IsFolder(srcDirPath))
+        {
+            Debug.LogError($"原始路径有误，不是文件夹路径，srcDirPath：{srcDirPath}");
+            return false;
+        }
+        if (!IsFolder(destDirPath))
+        {
+            Debug.LogError($"目标路径有误，不是文件夹路径，destDirPath：{destDirPath}");
+            return false;
+        }
         if (!Directory.Exists(srcDirPath))
         {
-            Debug.LogError($"不存在此路径，srcDirPath：{srcDirPath}");
-            return;
+            Debug.LogError($"原始路径不存在，srcDirPath：{srcDirPath}");
+            return false;
         }
-        destDirPath = Path.Combine(destDirPath, Path.GetFileName(srcDirPath));
+        destDirPath = containRootDir ? Path.Combine(destDirPath, Path.GetFileName(srcDirPath)) : destDirPath;
         if (!Directory.Exists(destDirPath))
         {
             Directory.CreateDirectory(destDirPath);
@@ -83,15 +110,16 @@ public static class IOUtils
         string[] filePaths = Directory.GetFileSystemEntries(srcDirPath);
         foreach (var temp in filePaths)
         {
-            if (File.Exists(temp))
+            if (IsFile(temp))
             {
                 string destFilePath = Path.Combine(destDirPath, Path.GetFileName(temp));
-                File.Copy(temp, destFilePath, true); ;
+                File.Copy(temp, destFilePath, overweite);
             }
             else
             {
-                CopyFile(temp, destDirPath);
+                CopyFolder(temp, destDirPath);
             }
         }
+        return true;
     }
 }
