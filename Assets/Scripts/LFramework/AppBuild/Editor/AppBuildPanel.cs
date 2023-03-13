@@ -63,7 +63,8 @@ public class AppBuildPanel : EditorWindow
         string outputPath = Path.Combine(BuildUtils.AppBuildRootPath, BuildUtils.GetPlatformName());
 
         //拷贝文件
-        CopyFile(BuildUtils.ABBuildRootPath, Application.streamingAssetsPath);
+        IOUtils.CopyFolder(BuildUtils.ABBuildRootPath, Application.streamingAssetsPath);
+        AssetDatabase.Refresh();
 
         //清理
         if (Directory.Exists(outputPath))
@@ -181,44 +182,13 @@ public class AppBuildPanel : EditorWindow
                     FileInfo info = new FileInfo(report.summary.outputPath);
                     size = info.Length;
                 }
-                EditorUtility.DisplayDialog("打包完成", $"用时：{ (DateTime.Now - startDT).TotalSeconds}秒\n文件大小：{size / 1024f / 1024f:N2}M\n打包后文件目录：\n{outputPath}", "确定");
+                EditorUtility.DisplayDialog("打包完成", $"用时：{(DateTime.Now - startDT).TotalSeconds}秒\n文件大小：{size / 1024f / 1024f:N2}M\n打包后文件目录：\n{outputPath}", "确定");
             }
         }
         catch (Exception e)
         {
             Debug.LogError($"构建app失败，{e}");
         }
-    }
-
-    /// <summary>
-    /// 拷贝文件
-    /// </summary>
-    private void CopyFile(string srcDirPath, string destDirPath)
-    {
-        if (!Directory.Exists(srcDirPath))
-        {
-            Debug.LogError($"不存在此路径，srcDirPath：{srcDirPath}");
-            return;
-        }
-        destDirPath = Path.Combine(destDirPath, Path.GetFileName(srcDirPath));
-        if (!Directory.Exists(destDirPath))
-        {
-            Directory.CreateDirectory(destDirPath);
-        }
-        string[] filePaths = Directory.GetFileSystemEntries(srcDirPath);
-        foreach (var temp in filePaths)
-        {
-            if (File.Exists(temp))
-            {
-                string destFilePath = Path.Combine(destDirPath, Path.GetFileName(temp));
-                File.Copy(temp, destFilePath, true); ;
-            }
-            else
-            {
-                CopyFile(temp, destDirPath);
-            }
-        }
-        AssetDatabase.Refresh();
     }
 
     /// <summary>
