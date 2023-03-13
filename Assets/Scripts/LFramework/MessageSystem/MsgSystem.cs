@@ -35,10 +35,10 @@ public static class MsgSystem
         if (m_EventDict.TryGetValue(key, out List<Delegate> eventList))
         {
             eventList.Remove(callBack);
-        }
-        if (eventList.Count == 0)
-        {
-            m_EventDict.Remove(key);
+			if (eventList.Count == 0)
+			{
+				m_EventDict.Remove(key);
+			}
         }
     }
 
