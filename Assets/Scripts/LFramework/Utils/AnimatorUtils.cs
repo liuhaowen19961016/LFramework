@@ -12,10 +12,20 @@ public static class AnimatorUtils
     {
         if (animator == null)
         {
+            Debug.LogError("动画状态机组件为null");
+            return 0;
+        }
+        if (animator.runtimeAnimatorController == null)
+        {
             Debug.LogError("动画状态机为null");
             return 0;
         }
         AnimationClip[] clips = animator.runtimeAnimatorController.animationClips;
+        if (clips == null)
+        {
+            Debug.LogError("动画状态机中动画片段数组为null");
+            return 0;
+        }
         foreach (AnimationClip clip in clips)
         {
             if (clip.name.Equals(animationName))
@@ -23,7 +33,7 @@ public static class AnimatorUtils
                 return clip.length;
             }
         }
-        Debug.LogError("找不到此动画片段：" + animationName);
+        Debug.LogError($"找不到此动画片段，animator挂载的物体：{animator.name}，animationName：{animationName}");
         return 0;
     }
 
@@ -37,11 +47,21 @@ public static class AnimatorUtils
             Debug.LogError("动画状态机为null");
             return 0;
         }
+        if (animator.runtimeAnimatorController == null)
+        {
+            Debug.LogError("动画状态机为null");
+            return 0;
+        }
         AnimationClip[] clips = animator.runtimeAnimatorController.animationClips;
+        if (clips == null)
+        {
+            Debug.LogError("动画状态机中动画片段数组为null");
+            return 0;
+        }
         if (clips == null
             || clips.Length <= index)
         {
-            Debug.LogError("动画片段下标错误：" + index);
+            Debug.LogError($"动画片段下标超出数组索引，animator挂载的物体：{animator.name}，index：{index}");
             return 0;
         }
         return clips[index].length;
