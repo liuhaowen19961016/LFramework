@@ -19,15 +19,14 @@ public static class MathUtils
         tempValue = Mathf.FloorToInt(tempValue);
         return tempValue / multiple;
     }
-    
+
     /// <summary>
     /// 随机一个元素（不会随机到排除列表中的元素）
     /// </summary>
     public static T GetRandomElement<T>(List<T> list, List<T> excludeList = null)
     {
         int randomIndex = UnityEngine.Random.Range(0, list.Count);
-        while (excludeList != null
-            && excludeList.Contains(list[randomIndex]))
+        while (excludeList != null && excludeList.Contains(list[randomIndex]))
         {
             randomIndex = UnityEngine.Random.Range(0, list.Count);
         }
@@ -52,5 +51,4 @@ public static class MathUtils
             }
         }
     }
-
 }
