@@ -47,7 +47,7 @@ public static class StringUtils
     }
 
     /// <summary>
-    /// 得到字符串长度(中文占两个 英文占一个)
+    /// 获取字符串长度(中文占两个 英文占一个)
     /// </summary>
     public static int GetLength(string str)
     {
