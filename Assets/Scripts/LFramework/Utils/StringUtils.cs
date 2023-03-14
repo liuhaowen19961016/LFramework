@@ -24,7 +24,6 @@ public static class StringUtils
             unitIndex++;
             tempNum /= v;
         }
-
         string str = "";
         if (unitIndex >= unitList.Length)
         {
@@ -40,68 +39,11 @@ public static class StringUtils
     }
 
     /// <summary>
-    /// 格式化倒计时
-    /// </summary>
-    /// 5H:22Min:26S
-    public static string FormatCountdown(int sec)
-    {
-        TimeSpan ts = new TimeSpan(0, 0, sec);
-        if (ts.Days > 0)
-        {
-            return $"{ts.Days}D:{ts.Hours}H:{ts.Minutes}Min";
-        }
-        else
-        {
-            return $"{ts.Hours}H:{ts.Minutes}Min:{ts.Seconds}S";
-        }
-    }
-
-    /// <summary>
-    /// 格式化日期
-    /// </summary>
-    public static string FormatDateTime(DateTime dt)
-    {
-        return dt.ToString("yyyy/MM/dd");
-    }
-
-    /// <summary>
-    /// 格式化时间(只显示最大单位的)
-    /// </summary>
-    public static string FormatTime(int sec)
-    {
-        TimeSpan ts = new TimeSpan(0, 0, sec);
-        if (ts.Days > 0)
-        {
-            return $"{ts.Days}D";
-        }
-        else if (ts.Hours > 0)
-        {
-            return $"{ts.Hours}H";
-        }
-        else if (ts.Minutes > 0)
-        {
-            return $"{ts.Minutes}Min";
-        }
-        else
-        {
-            return $"{ts.Seconds}S";
-        }
-    }
-
-    /// <summary>
     /// 千分位添加逗号
     /// </summary>
     public static string FormatComma(long num)
     {
         return num.ToString("N0");
-    }
-
-    /// <summary>
-    /// 格式化超出的文本
-    /// </summary>
-    public static string FormatBeyondText(string str)
-    {
-        return str;
     }
 
     /// <summary>
