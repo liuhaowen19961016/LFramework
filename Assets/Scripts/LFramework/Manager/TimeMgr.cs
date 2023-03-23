@@ -5,17 +5,17 @@ public class TimeMgr : Singleton<TimeMgr>
 {
     private DateTime m_StartDT = new DateTime(1970, 1, 1, 0, 0, 0);//UTC起始时间1970/1/1
 
-    int m_TimeZone;//时区
+    private int m_TimeZone;//时区
 
-    long m_LoseTimestamp;//与正确时间戳的差
+    private long m_LoseTimestampMS;//与正确时间戳的差（毫秒）
 
     /// <summary>
     /// 更新服务器时间（服务器每隔几秒传来正确的时间戳做比对）
     /// </summary>
-    public void UpdateServerTime(long serverTimestamp)
+    public void UpdateServerTime(long serverTimestampMS)
     {
-        long localTimestamp = GetTimestamp_Local(false);
-        m_LoseTimestamp = (serverTimestamp - localTimestamp) / 1000;
+        long localTimestampMS = GetLocalTimestampMS();
+        m_LoseTimestampMS = serverTimestampMS - localTimestampMS;
     }
 
     /// <summary>
@@ -26,6 +26,9 @@ public class TimeMgr : Singleton<TimeMgr>
         m_TimeZone = timeZone;
     }
 
+    /// <summary>
+    /// 获取本地时间ticks
+    /// </summary>
     private long GetTicks()
     {
         return DateTime.Now.ToUniversalTime().Ticks - 621355968000000000;
@@ -38,33 +41,45 @@ public class TimeMgr : Singleton<TimeMgr>
     /// </summary>
     public DateTime GetServerDateTime()
     {
-        long timestamp_server = GetTimestamp_Server();
-        return ConvertToServerTime(timestamp_server);
+        long serverTimestamp = GetServerTimestamp();
+        return ConvertToServerTime(serverTimestamp);
     }
 
     /// <summary>
-    /// 获取本地时间戳
+    /// 获取本地时间戳（毫秒）
     /// </summary>
-    public long GetTimestamp_Local(bool sec = true)
+    public long GetLocalTimestampMS()
     {
         long ticks = GetTicks();
-        long timestamp = sec
-             ? ticks / 10000000
-             : ticks / 10000;
-        return timestamp;
+        long localTimestamp = ticks / 10000;
+        return localTimestamp;
     }
 
     /// <summary>
-    /// 获取服务器的时间戳
+    /// 获取本地时间戳（秒）
     /// </summary>
-    public long GetTimestamp_Server(bool sec = true)
+    public long GetLocalTimestamp()
     {
-        long ticks = GetTicks();
-        long timestamp = sec
-             ? ticks / 10000000
-             : ticks / 10000;
-        timestamp += m_LoseTimestamp;
-        return timestamp;
+        long localTimestamp = GetLocalTimestampMS() / 1000;
+        return localTimestamp;
+    }
+
+    /// <summary>
+    /// 获取服务器时间戳（毫秒）
+    /// </summary>
+    public long GetServerTimestampMS()
+    {
+        long serverTimestamp = GetLocalTimestampMS() + m_LoseTimestampMS;
+        return serverTimestamp;
+    }
+
+    /// <summary>
+    /// 获取服务器时间戳（秒）
+    /// </summary>
+    public long GetServerTimestamp()
+    {
+        long serverTimestamp = GetServerTimestampMS() / 1000;
+        return serverTimestamp;
     }
 
     #endregion 常用接口
