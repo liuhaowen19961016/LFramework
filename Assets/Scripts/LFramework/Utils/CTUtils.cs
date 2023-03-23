@@ -90,9 +90,9 @@ public static class CTUtils
     /// <summary>
     /// 世界坐标转UI坐标
     /// </summary>
-    public static Vector2 World2UI(Vector3 worldPos, RectTransform rect, Camera worldCamera, Camera uiCamera)
+    public static Vector2 World2UI(Vector3 worldPos, RectTransform rect, Camera uiCamera)
     {
-        Vector2 screenPos = World2Screen(worldPos, worldCamera);
+        Vector2 screenPos = World2Screen(worldPos, uiCamera);
         return Screen2UI(screenPos, rect, uiCamera);
     }
 }
