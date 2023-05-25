@@ -154,7 +154,7 @@ public class Item_Tooltip : MonoBehaviour
     /// </summary>
     void RefreshPos()
     {
-        GetComponent<RectTransform>().anchoredPosition = CTUtils.World2UI(m_Data.pos, TooltipMgr.Ins.ParentRect, m_UICanvas.worldCamera);
+        GetComponent<RectTransform>().anchoredPosition = CTUtils.World2UI(m_Data.pos, TooltipMgr.Ins.ParentRect);
 
         float bgOffset = m_Data.offset;
         float arrowOffset = 0;
@@ -279,8 +279,8 @@ public class Item_Tooltip : MonoBehaviour
         if (m_Data.dirType == TooltipData.EDirType.Up
             || m_Data.dirType == TooltipData.EDirType.Down)
         {
-            float bgCornerRight = CTUtils.World2UI(bgCorners[3], m_UICanvas.GetComponent<RectTransform>(), m_UICanvas.worldCamera).x;
-            float bgCornerLeft = CTUtils.World2UI(bgCorners[0], m_UICanvas.GetComponent<RectTransform>(), m_UICanvas.worldCamera).x;
+            float bgCornerRight = CTUtils.World2UI(bgCorners[3], m_UICanvas.GetComponent<RectTransform>()).x;
+            float bgCornerLeft = CTUtils.World2UI(bgCorners[0], m_UICanvas.GetComponent<RectTransform>()).x;
             if (bgCornerRight > m_ShowRectBorder[3])
             {
                 float offset = bgCornerRight - m_ShowRectBorder[3];
@@ -297,8 +297,8 @@ public class Item_Tooltip : MonoBehaviour
         else if (m_Data.dirType == TooltipData.EDirType.Left
             || m_Data.dirType == TooltipData.EDirType.Right)
         {
-            float bgCornerUp = CTUtils.World2UI(bgCorners[1], m_UICanvas.GetComponent<RectTransform>(), m_UICanvas.worldCamera).y;
-            float bgCornerDown = CTUtils.World2UI(bgCorners[0], m_UICanvas.GetComponent<RectTransform>(), m_UICanvas.worldCamera).y;
+            float bgCornerUp = CTUtils.World2UI(bgCorners[1], m_UICanvas.GetComponent<RectTransform>()).y;
+            float bgCornerDown = CTUtils.World2UI(bgCorners[0], m_UICanvas.GetComponent<RectTransform>()).y;
             if (bgCornerUp > m_ShowRectBorder[0])
             {
                 float offset = bgCornerUp - m_ShowRectBorder[0];
@@ -327,10 +327,10 @@ public class Item_Tooltip : MonoBehaviour
 
         Vector3[] showRectCorners = new Vector3[4];
         m_Data.showRect.GetWorldCorners(showRectCorners);
-        m_ShowRectBorder[0] = CTUtils.World2UI(showRectCorners[1], m_UICanvas.GetComponent<RectTransform>(), m_UICanvas.worldCamera).y;
-        m_ShowRectBorder[1] = CTUtils.World2UI(showRectCorners[0], m_UICanvas.GetComponent<RectTransform>(), m_UICanvas.worldCamera).y;
-        m_ShowRectBorder[2] = CTUtils.World2UI(showRectCorners[0], m_UICanvas.GetComponent<RectTransform>(), m_UICanvas.worldCamera).x;
-        m_ShowRectBorder[3] = CTUtils.World2UI(showRectCorners[3], m_UICanvas.GetComponent<RectTransform>(), m_UICanvas.worldCamera).x;
+        m_ShowRectBorder[0] = CTUtils.World2UI(showRectCorners[1], m_UICanvas.GetComponent<RectTransform>()).y;
+        m_ShowRectBorder[1] = CTUtils.World2UI(showRectCorners[0], m_UICanvas.GetComponent<RectTransform>()).y;
+        m_ShowRectBorder[2] = CTUtils.World2UI(showRectCorners[0], m_UICanvas.GetComponent<RectTransform>()).x;
+        m_ShowRectBorder[3] = CTUtils.World2UI(showRectCorners[3], m_UICanvas.GetComponent<RectTransform>()).x;
     }
 
     /// <summary>
@@ -346,7 +346,7 @@ public class Item_Tooltip : MonoBehaviour
 
         float showRectWidth = m_ShowRectBorder[3] - m_ShowRectBorder[2];
         float showRectHeight = m_ShowRectBorder[0] - m_ShowRectBorder[1];
-        Vector2 tooltipUIPos = CTUtils.World2UI(m_Data.pos, m_UICanvas.GetComponent<RectTransform>(), m_UICanvas.worldCamera);
+        Vector2 tooltipUIPos = CTUtils.World2UI(m_Data.pos, m_UICanvas.GetComponent<RectTransform>());
         float borderToUpRatio = (m_ShowRectBorder[0] - tooltipUIPos.y) / showRectHeight;
         float borderToDownRatio = (tooltipUIPos.y - m_ShowRectBorder[1]) / showRectHeight;
         float borderToLeftRatio = (tooltipUIPos.x - m_ShowRectBorder[2]) / showRectWidth;
