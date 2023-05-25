@@ -77,22 +77,61 @@ public static class CTUtils
         return camera.ViewportToScreenPoint(viewPos);
     }
 
+    #region UI相关
+
     /// <summary>
-    /// 屏幕坐标转UI坐标
+    /// 屏幕坐标转UI局部坐标
     /// </summary>
-    public static Vector2 Screen2UI(Vector2 screenPos, RectTransform rect, Camera uiCamera = null)
+    public static Vector2 Screen2UI(Vector2 screenPos, RectTransform rect)
     {
-        Vector2 uiPos;
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(rect, screenPos, uiCamera, out uiPos);
+        Camera uiCamera = GameObject.Find("UICanvas").GetComponent<Canvas>().worldCamera;//TODO
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(rect, screenPos, uiCamera, out Vector2 uiPos);
         return uiPos;
     }
 
     /// <summary>
     /// 世界坐标转UI坐标
     /// </summary>
-    public static Vector2 World2UI(Vector3 worldPos, RectTransform rect, Camera uiCamera)
+    public static Vector2 World2UI(Vector3 worldPos, RectTransform rect, Camera worldCamera = null)
     {
-        Vector2 screenPos = World2Screen(worldPos, uiCamera);
-        return Screen2UI(screenPos, rect, uiCamera);
+        if (worldCamera == null)
+        {
+            worldCamera = Camera.main;
+        }
+        Vector2 screenPos = World2Screen(worldPos, worldCamera);
+        return Screen2UI(screenPos, rect);
     }
+
+    /// <summary>
+    /// UI世界坐标转屏幕坐标
+    /// </summary>
+    public static Vector2 UIWorld2Screen(Vector3 v)
+    {
+        Canvas uiCanvas = GameObject.Find("UICanvas").GetComponent<Canvas>();//TODO
+        Camera uiCamera = uiCanvas.worldCamera;
+        if (uiCanvas.renderMode == RenderMode.ScreenSpaceOverlay)//transform.position = 屏幕坐标
+        {
+            return v;
+        }
+        else if (uiCanvas.renderMode == RenderMode.ScreenSpaceCamera)
+        {
+            return World2Screen(v, uiCamera);
+        }
+        else if (uiCanvas.renderMode == RenderMode.WorldSpace)
+        {
+            return World2Screen(v, uiCamera);
+        }
+        return Vector2.zero;
+    }
+
+    /// <summary>
+    /// UI世界坐标转世界坐标
+    /// </summary>
+    public static Vector3 UIWorld2World(Vector2 v)
+    {
+        Vector2 screenPos = UIWorld2Screen(v);
+        return Screen2World(screenPos);
+    }
+
+    #endregion UI相关
 }
