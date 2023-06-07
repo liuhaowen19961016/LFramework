@@ -1,14 +1,16 @@
-﻿public abstract class Singleton<T>
-    where T : class, new()
+﻿using System;
+
+public abstract class Singleton<T>
+    where T : class
 {
-    static T m_Ins;
+    private static T m_Ins;
     public static T Ins
     {
         get
         {
             if (m_Ins == null)
             {
-                m_Ins = new T();
+                m_Ins = Activator.CreateInstance(typeof(T), true) as T;
             }
             return m_Ins;
         }
@@ -22,10 +24,5 @@
     public virtual void Init()
     {
 
-    }
-
-    public static void Destroy()
-    {
-        m_Ins = null;
     }
 }
