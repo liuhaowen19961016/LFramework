@@ -65,8 +65,8 @@ public class GameObjectPool
         else
         {
             go = m_GoList_Inactive[0];
+            m_GoList_Inactive.Remove(go);
         }
-        m_GoList_Inactive.Remove(go);
         m_GoList_Active.Add(go);
         go.SetActive(true);
         return go;
@@ -91,7 +91,7 @@ public class GameObjectPool
         else
         {
             m_GoList_Active.Remove(go);
-            if (m_Capacity > 0 && m_GoList_Inactive.Count >= m_Capacity)
+            if (m_Capacity >= 0 && m_GoList_Inactive.Count >= m_Capacity)
             {
                 go.GetComponent<PoolObject>()?.Reset();
                 GameObject.Destroy(go);
