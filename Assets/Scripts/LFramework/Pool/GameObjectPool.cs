@@ -60,9 +60,12 @@ public class GameObjectPool
         GameObject go = null;
         if (m_GoList_Inactive.Count <= 0)
         {
-            Instantiate();
+            go = Instantiate();
         }
-        go = m_GoList_Inactive[0];
+        else
+        {
+            go = m_GoList_Inactive[0];
+        }
         m_GoList_Inactive.Remove(go);
         m_GoList_Active.Add(go);
         go.SetActive(true);
