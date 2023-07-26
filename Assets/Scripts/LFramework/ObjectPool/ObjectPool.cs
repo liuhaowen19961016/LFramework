@@ -17,12 +17,16 @@ public class ObjectPool<T> : IObjectPool<T>
     private Action<T> m_OnPut;//放回的回调
     private Action<T> m_OnDestroy;//销毁的回调
 
+    private string m_PoolKey;//对象池的key
+
     /// <summary>
     /// 初始化池子
     /// </summary>
+    /// 通过ObjectPoolMgr统一管理所有对象池，不建议在外部使用new构造
     public ObjectPool(Func<T> onCreate, Action<T> onGet = null, Action<T> onPut = null, Action<T> onDestroy = null,
-        int capacity = -1, bool needPreLoad = false)
+        int capacity = -1, bool needPreLoad = false, string poolKey = "")
     {
+        m_PoolKey = poolKey;
         m_OnCreate = onCreate;
         m_OnGet = onGet;
         m_OnPut = onPut;
@@ -121,11 +125,15 @@ public class ObjectPool<T> : IObjectPool<T>
         {
             Put(m_ActiveList[i]);
         }
-        Log();
+    }
+
+    public string GetPoolKey()
+    {
+        return m_PoolKey;
     }
 
     public void Log()
     {
-        Debug.Log($"{typeof(T).Name}对象池中，激活对象数量：{m_ActiveList.Count},未激活对象数量：{m_DeactiveList.Count}");
+        Debug.Log($"{m_PoolKey}对象池中，激活对象数量：{m_ActiveList.Count},未激活对象数量：{m_DeactiveList.Count}");
     }
 }
