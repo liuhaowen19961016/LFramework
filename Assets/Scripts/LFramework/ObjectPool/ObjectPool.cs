@@ -32,7 +32,12 @@ public class ObjectPool<T> : IObjectPool<T>
         {
             for (int i = 0; i < capacity; i++)
             {
-                m_OnCreate?.Invoke();
+                T t = m_OnCreate?.Invoke();
+                if (t != null)
+                {
+                    m_DeactiveList.Add(t);
+                    Log();
+                }
             }
         }
     }
@@ -89,7 +94,6 @@ public class ObjectPool<T> : IObjectPool<T>
         if (!m_ActiveList.Contains(t))
         {
             Debug.LogError($"此对象不由对象池管理：{t}");
-            m_OnDestroy?.Invoke(t);
             return false;
         }
         m_ActiveList.Remove(t);
@@ -103,6 +107,7 @@ public class ObjectPool<T> : IObjectPool<T>
         else
         {
             m_OnDestroy?.Invoke(t);
+            Log();
             return false;
         }
     }
@@ -112,7 +117,7 @@ public class ObjectPool<T> : IObjectPool<T>
     /// </summary>
     public void PutAll()
     {
-        for (int i = 0; i < m_ActiveList.Count; i++)
+        for (int i = m_ActiveList.Count - 1; i >= 0; i--)
         {
             Put(m_ActiveList[i]);
         }
