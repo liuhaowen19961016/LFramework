@@ -26,7 +26,7 @@ public class LoadedAB
 /// </summary>
 public class ABMgr
 {
-    private ClassObjectPool<LoadedAB> m_LoadedABPool = ObjectPoolMgr.Ins.GetOrCreateClassObjectPool<LoadedAB>(100);//LoadedAB的类对象池
+    private ObjectPool<LoadedAB> m_LoadedABPool;//LoadedAB的类对象池
 
     public Dictionary<string, string> m_AssetPath2ABNameDict = new Dictionary<string, string>();//资源路径-ab包名
     private Dictionary<string, List<string>> m_ABName2DepABNamesDict = new Dictionary<string, List<string>>();//ab包名-依赖ab包名列表
@@ -39,9 +39,18 @@ public class ABMgr
     private bool m_IsInited;//是否初始化
 
     /// <summary>
+    /// 初始化
+    /// </summary>
+    public void Init()
+    {
+        InitPool();
+        LoadConfig();
+    }
+
+    /// <summary>
     /// 加载配置文件
     /// </summary>
-    public void LoadConfig()
+    private void LoadConfig()
     {
         string path = Path.Combine(BuildUtils.ABFilePath, BuildUtils.FileName_ABAssetsConfigXML);
         FileStream fs = new FileStream(path, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite);
@@ -69,6 +78,20 @@ public class ABMgr
         }
 
         m_IsInited = true;
+    }
+
+    /// <summary>
+    /// 初始化对象池
+    /// </summary>
+    private void InitPool()
+    {
+        m_LoadedABPool = new ObjectPool<LoadedAB>
+        (
+            onCreate: () => { return new LoadedAB(); },
+            onPut: (obj) => { obj.Reset(); },
+            onDestroy: (obj) => { obj.Reset(); obj = null; },
+            capacity: 300
+        );
     }
 
     /// <summary>
@@ -171,7 +194,7 @@ public class ABMgr
         }
         if (!m_LoadedABDict.TryGetValue(abName, out LoadedAB loadedAB2))
         {
-            loadedAB2 = m_LoadedABPool.Allocate();
+            loadedAB2 = m_LoadedABPool.Get();
             loadedAB2.abName = abName;
             loadedAB2.bundle = assetBundle;
             m_LoadedABDict.Add(abName, loadedAB2);
@@ -268,7 +291,7 @@ public class ABMgr
             loadedAB.bundle.Unload(unLoadAllLoadedObjects);
             m_LoadedABDict.Remove(abName);
             loadedAB.Reset();
-            m_LoadedABPool.Recycle(loadedAB);
+            m_LoadedABPool.Put(loadedAB);
         }
     }
 
@@ -298,7 +321,7 @@ public class ABMgr
                 }
                 else
                 {
-                    LoadedAB loadedAB = m_LoadedABPool.Allocate();
+                    LoadedAB loadedAB = m_LoadedABPool.Get();
                     loadedAB.abName = pairs.Key;
                     loadedAB.bundle = tempRequest.assetBundle;
                     m_LoadedABDict.Add(pairs.Key, loadedAB);

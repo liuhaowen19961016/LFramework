@@ -18,9 +18,9 @@ public partial class AssetDatabaseService : MonoSingleton<AssetDatabaseService>,
     private float m_LastCleanTime;//上一次clean时间
     private float m_LastGCTime;//上一次GC时间
 
-    private ClassObjectPool<AsyncLoadCommonAssetCallBackParam> m_AsyncLoadCommonAssetCallBackParamPool = ObjectPoolMgr.Ins.GetOrCreateClassObjectPool<AsyncLoadCommonAssetCallBackParam>(5);//异步加载通用资源回调参数类的类对象池
-    private ClassObjectPool<AsyncLoadSceneAssetOperation> m_AsyncLoadSceneAssetOperationPool = ObjectPoolMgr.Ins.GetOrCreateClassObjectPool<AsyncLoadSceneAssetOperation>(5);//异步加载场景资源类的类对象池
-    private ClassObjectPool<AsyncLoadSceneAssetCallBackParam> m_AsyncLoadSceneAssetCallBackParamPool = ObjectPoolMgr.Ins.GetOrCreateClassObjectPool<AsyncLoadSceneAssetCallBackParam>(5);//异步加载场景资源回调参数类的类对象池
+    private ObjectPool<AsyncLoadCommonAssetCallBackParam> m_AsyncLoadCommonAssetCallBackParamPool;//异步加载通用资源回调参数类的类对象池
+    private ObjectPool<AsyncLoadSceneAssetOperation> m_AsyncLoadSceneAssetOperationPool;//异步加载场景资源类的类对象池
+    private ObjectPool<AsyncLoadSceneAssetCallBackParam> m_AsyncLoadSceneAssetCallBackParamPool;//异步加载场景资源回调参数类的类对象池
 
     //场景资源
     private Dictionary<string, AsyncLoadSceneAssetOperation> m_AsyncLoading_SceneAsset = new Dictionary<string, AsyncLoadSceneAssetOperation>();//正在异步加载的场景资源字典
@@ -33,7 +33,36 @@ public partial class AssetDatabaseService : MonoSingleton<AssetDatabaseService>,
     /// </summary>
     public void Init()
     {
+        InitPool();
         m_IsInited = true;
+    }
+
+    /// <summary>
+    /// 初始化对象池
+    /// </summary>
+    private void InitPool()
+    {
+        m_AsyncLoadCommonAssetCallBackParamPool = new ObjectPool<AsyncLoadCommonAssetCallBackParam>
+        (
+            onCreate: () => { return new AsyncLoadCommonAssetCallBackParam(); },
+            onPut: (obj) => { obj.Reset(); },
+            onDestroy: (obj) => { obj.Reset(); obj = null; },
+            capacity: 5
+        );
+        m_AsyncLoadSceneAssetOperationPool = new ObjectPool<AsyncLoadSceneAssetOperation>
+       (
+           onCreate: () => { return new AsyncLoadSceneAssetOperation(); },
+           onPut: (obj) => { obj.Reset(); },
+           onDestroy: (obj) => { obj.Reset(); obj = null; },
+           capacity: 5
+       );
+        m_AsyncLoadSceneAssetCallBackParamPool = new ObjectPool<AsyncLoadSceneAssetCallBackParam>
+        (
+            onCreate: () => { return new AsyncLoadSceneAssetCallBackParam(); },
+            onPut: (obj) => { obj.Reset(); },
+            onDestroy: (obj) => { obj.Reset(); obj = null; },
+            capacity: 5
+        );
     }
 
     #region 实例化
@@ -121,7 +150,7 @@ public partial class AssetDatabaseService : MonoSingleton<AssetDatabaseService>,
         where T : Object
     {
         T asset = AssetDatabase.LoadAssetAtPath<T>(assetPath);
-        AsyncLoadCommonAssetCallBackParam param = m_AsyncLoadCommonAssetCallBackParamPool.Allocate();
+        AsyncLoadCommonAssetCallBackParam param = m_AsyncLoadCommonAssetCallBackParamPool.Get();
         param.obj = asset;
         onCompleted?.Invoke(param);
         param.Reset();
@@ -145,7 +174,7 @@ public partial class AssetDatabaseService : MonoSingleton<AssetDatabaseService>,
             return;
         }
         //添加到正在异步加载字典中
-        operation = m_AsyncLoadSceneAssetOperationPool.Allocate();
+        operation = m_AsyncLoadSceneAssetOperationPool.Get();
         operation.assetPath = assetPath;
         operation.additive = additive;
         operation.activateOnLoad = activateOnLoad;
@@ -220,7 +249,7 @@ public partial class AssetDatabaseService : MonoSingleton<AssetDatabaseService>,
                 }
                 if (operation.sceneRequest.isDone || (!operation.sceneRequest.allowSceneActivation && operation.sceneRequest.progress >= 0.9f))
                 {
-                    AsyncLoadSceneAssetCallBackParam param = m_AsyncLoadSceneAssetCallBackParamPool.Allocate();
+                    AsyncLoadSceneAssetCallBackParam param = m_AsyncLoadSceneAssetCallBackParamPool.Get();
                     param.sceneRequest = operation.sceneRequest;
                     param.scene = SceneManager.GetSceneAt(SceneManager.sceneCount - 1);
                     try
@@ -232,7 +261,7 @@ public partial class AssetDatabaseService : MonoSingleton<AssetDatabaseService>,
                         Debug.LogError(e);
                     }
                     param.Reset();
-                    m_AsyncLoadSceneAssetCallBackParamPool.Recycle(param);
+                    m_AsyncLoadSceneAssetCallBackParamPool.Put(param);
                     m_KeyToRemoveList_SceneAsset.Add(pairs.Key);
                 }
             }
@@ -240,7 +269,7 @@ public partial class AssetDatabaseService : MonoSingleton<AssetDatabaseService>,
             {
                 AsyncLoadSceneAssetOperation tempOperation = m_AsyncLoading_SceneAsset[m_KeyToRemoveList_SceneAsset[i]];
                 tempOperation.Reset();
-                m_AsyncLoadSceneAssetOperationPool.Recycle(tempOperation);
+                m_AsyncLoadSceneAssetOperationPool.Put(tempOperation);
                 m_AsyncLoading_SceneAsset.Remove(m_KeyToRemoveList_SceneAsset[i]);
             }
         }
