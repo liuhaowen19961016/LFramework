@@ -124,7 +124,7 @@ public class ObjectPool<T> : IObjectPool<T>
             T t = m_ActiveList[i];
             if (t != null)
             {
-                m_OnDestroy(t);
+                m_OnDestroy?.Invoke(t);
             }
         }
         for (int i = m_DeactiveList.Count - 1; i >= 0; i--)
@@ -132,7 +132,7 @@ public class ObjectPool<T> : IObjectPool<T>
             T t = m_DeactiveList[i];
             if (t != null)
             {
-                m_OnDestroy(t);
+                m_OnDestroy?.Invoke(t);
             }
         }
         m_ActiveList.Clear();
