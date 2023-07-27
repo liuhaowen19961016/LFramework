@@ -17,4 +17,9 @@ public interface IObjectPool<T>
     /// 全部放回池子
     /// </summary>
     void PutAll();
+
+    /// <summary>
+    /// 释放池子
+    /// </summary>
+    void Dispose();
 }

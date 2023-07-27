@@ -22,11 +22,10 @@ public class ObjectPool<T> : IObjectPool<T>
     /// <summary>
     /// 初始化池子
     /// </summary>
-    /// 通过ObjectPoolMgr统一管理所有对象池，不建议在外部使用new构造
     public ObjectPool(Func<T> onCreate, Action<T> onGet = null, Action<T> onPut = null, Action<T> onDestroy = null,
         int capacity = -1, bool needPreLoad = false, string poolKey = "")
     {
-        m_PoolKey = poolKey;
+        m_PoolKey = string.IsNullOrEmpty(poolKey) ? typeof(T).Name : poolKey;
         m_OnCreate = onCreate;
         m_OnGet = onGet;
         m_OnPut = onPut;
@@ -46,9 +45,6 @@ public class ObjectPool<T> : IObjectPool<T>
         }
     }
 
-    /// <summary>
-    /// 从池子中取
-    /// </summary>
     public T Get()
     {
         T t = null;
@@ -82,9 +78,6 @@ public class ObjectPool<T> : IObjectPool<T>
         return t;
     }
 
-    /// <summary>
-    /// 放回池子
-    /// </summary>
     public bool Put(T t)
     {
         if (t == null)
@@ -116,15 +109,34 @@ public class ObjectPool<T> : IObjectPool<T>
         }
     }
 
-    /// <summary>
-    /// 全部放回池子
-    /// </summary>
     public void PutAll()
     {
         for (int i = m_ActiveList.Count - 1; i >= 0; i--)
         {
             Put(m_ActiveList[i]);
         }
+    }
+
+    public void Dispose()
+    {
+        for (int i = m_ActiveList.Count - 1; i >= 0; i--)
+        {
+            T t = m_ActiveList[i];
+            if (t != null)
+            {
+                m_OnDestroy(t);
+            }
+        }
+        for (int i = m_DeactiveList.Count - 1; i >= 0; i--)
+        {
+            T t = m_DeactiveList[i];
+            if (t != null)
+            {
+                m_OnDestroy(t);
+            }
+        }
+        m_ActiveList.Clear();
+        m_DeactiveList.Clear();
     }
 
     public string GetPoolKey()
