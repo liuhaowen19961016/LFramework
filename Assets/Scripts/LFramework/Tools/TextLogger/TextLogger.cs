@@ -23,7 +23,7 @@ public class TextLogger
     /// <summary>
     /// 写入一行文本
     /// </summary>
-    public void WriteLine(string foramt, params object[] param)
+    public void WriteLine(string foramt, params object[] args)
     {
         StreamWriter sw = null;
         try
@@ -49,13 +49,13 @@ public class TextLogger
             if (sw != null)
             {
                 m_StringBuilder.Clear();
-                if (param.Length == 0)
+                if (args.Length == 0)
                 {
                     m_StringBuilder.Append(foramt);
                 }
                 else
                 {
-                    m_StringBuilder.AppendFormat(foramt, param);
+                    m_StringBuilder.AppendFormat(foramt, args);
                 }
                 sw.WriteLine(m_StringBuilder);
             }
@@ -81,7 +81,7 @@ public class TextLogger
     /// <summary>
     /// 写入文本
     /// </summary>
-    public void Write(string foramt, params object[] param)
+    public void Write(string foramt, params object[] args)
     {
         StreamWriter sw = null;
         try
@@ -107,13 +107,13 @@ public class TextLogger
             if (sw != null)
             {
                 m_StringBuilder.Clear();
-                if (param.Length == 0)
+                if (args.Length == 0)
                 {
                     m_StringBuilder.Append(foramt);
                 }
                 else
                 {
-                    m_StringBuilder.AppendFormat(foramt, param);
+                    m_StringBuilder.AppendFormat(foramt, args);
                 }
                 sw.Write(m_StringBuilder);
             }
