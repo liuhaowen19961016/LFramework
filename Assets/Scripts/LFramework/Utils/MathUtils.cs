@@ -14,8 +14,12 @@ public static class MathUtils
     /// digits:保留几位小数
     public static float Round(float value, int digits = 1)
     {
+        if (value == 0)
+        {
+            return 0;
+        }
         float multiple = Mathf.Pow(10, digits);
-        float tempValue = value * multiple + 0.5f;
+        float tempValue = value > 0 ? value * multiple + 0.5f : value * multiple - 0.5f;
         tempValue = Mathf.FloorToInt(tempValue);
         return tempValue / multiple;
     }
