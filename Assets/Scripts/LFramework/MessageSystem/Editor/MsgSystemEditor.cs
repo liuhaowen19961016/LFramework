@@ -19,7 +19,7 @@ public class MsgSystemEditor : EditorWindow
 
     private List<string> m_MsgTypeStrs = new List<string>();//所有消息类型
 
-    [MenuItem("工具/事件系统/事件系统编辑器", priority = 0)]
+    [MenuItem("工具/事件系统/事件系统编辑器", priority = 1000)]
     private static void Open()
     {
         EditorWindow window = GetWindow<MsgSystemEditor>("事件系统编辑器");

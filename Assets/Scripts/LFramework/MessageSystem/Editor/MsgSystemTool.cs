@@ -15,7 +15,7 @@ public class MsgSystemTool
             typeof(MsgConst),
         };
 
-    [MenuItem("工具/事件系统/检查事件绑定关系", priority = 1)]
+    [MenuItem("工具/事件系统/检查事件绑定关系", priority = 1001)]
     private static void CheckMsgBind()
     {
         string addListenerMethod = "AddListener";
