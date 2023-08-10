@@ -1,0 +1,13 @@
+1.表格要求
+第一行为字段名，第二列为字段类型，第三行为字段注释
+第一列必须为int类型的id，且id唯一
+字段类型不填默认此列为注释
+
+2.支持的类型
+int、string、bool、char、double、float、TimeSpan、DateTime、Type[]
+
+3.单行配置数据使用下面的格式填写，转csv时再通过excel自带的转置转回来
+id	          int	     唯一标识	   0	  
+hp			  int	      初始化	  98	玩家血量
+speed	     float	       速度	      5	    玩家速度
+name	     string	       名字	      xy	玩家名字
