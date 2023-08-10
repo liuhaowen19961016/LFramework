@@ -13,7 +13,7 @@ public class ConfigSystemTool
 {
     public const string ConfigClassRootPath = "Assets/Scripts/ConfigClass";//生成的配置结构类根目录
 
-    [MenuItem("工具/表格配置/生成配置结构类", priority = 1)]
+    [MenuItem("表格配置工具/生成配置结构类", priority = 1)]
     public static void Csv2ConfigClass()
     {
         bool genComplete = true;
@@ -112,7 +112,7 @@ public class ConfigSystemTool
         }
     }
 
-    [MenuItem("工具/表格配置/检查（检查无误后再生成配置结构类）", priority = 100)]
+    [MenuItem("表格配置工具/检查（检查无误后再生成配置结构类）", priority = 100)]
     public static void Check()
     {
         bool noError = true;

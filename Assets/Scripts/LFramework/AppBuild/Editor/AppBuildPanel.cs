@@ -13,7 +13,7 @@ public class AppBuildPanel : EditorWindow
 
     private AppBuildConfig m_BuildConfig;//App打包配置
 
-    [MenuItem("工具/打包工具/App打包面板", priority = 111)]
+    [MenuItem("打包工具/App打包面板", priority = 0)]
     private static void Open()
     {
         EditorWindow window = GetWindow<AppBuildPanel>("App打包面板");

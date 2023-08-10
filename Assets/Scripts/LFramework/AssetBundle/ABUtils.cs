@@ -46,16 +46,16 @@ public static class ABUtils
     #region 编辑器扩展
 #if UNITY_EDITOR
 
-    [UnityEditor.MenuItem("工具/打包工具/开启打包模式", priority = 1)]
+    [UnityEditor.MenuItem("打包工具/开启打包模式", priority = 100)]
     public static void SetPackMode()
     {
         IsPackMode = !IsPackMode;
     }
 
-    [UnityEditor.MenuItem("工具/打包工具/开启打包模式", priority = 1, validate = true)]
+    [UnityEditor.MenuItem("打包工具/开启打包模式", priority = 100, validate = true)]
     public static bool SetPackModeValidate()
     {
-        UnityEditor.Menu.SetChecked("工具/打包工具/开启打包模式", IsPackMode);
+        UnityEditor.Menu.SetChecked("打包工具/开启打包模式", IsPackMode);
         return true;
     }
 
