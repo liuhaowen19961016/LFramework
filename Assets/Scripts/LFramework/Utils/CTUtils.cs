@@ -82,9 +82,12 @@ public static class CTUtils
     /// <summary>
     /// 屏幕坐标转UI局部坐标
     /// </summary>
-    public static Vector2 Screen2UI(Vector2 screenPos, RectTransform rect)
+    public static Vector2 Screen2UI(Vector2 screenPos, RectTransform rect, Camera uiCamera = null)
     {
-        Camera uiCamera = GameObject.Find("UICanvas").GetComponent<Canvas>().worldCamera;//TODO
+        if (uiCamera == null)
+        {
+            uiCamera = UIMgr.Ins.UICamera;
+        }
         RectTransformUtility.ScreenPointToLocalPointInRectangle(rect, screenPos, uiCamera, out Vector2 uiPos);
         return uiPos;
     }
@@ -94,10 +97,6 @@ public static class CTUtils
     /// </summary>
     public static Vector2 World2UI(Vector3 worldPos, RectTransform rect, Camera worldCamera = null)
     {
-        if (worldCamera == null)
-        {
-            worldCamera = Camera.main;
-        }
         Vector2 screenPos = World2Screen(worldPos, worldCamera);
         return Screen2UI(screenPos, rect);
     }
@@ -105,9 +104,12 @@ public static class CTUtils
     /// <summary>
     /// UI世界坐标转屏幕坐标
     /// </summary>
-    public static Vector2 UIWorld2Screen(Vector3 v)
+    public static Vector2 UIWorld2Screen(Vector3 v, Canvas uiCanvas = null)
     {
-        Canvas uiCanvas = GameObject.Find("UICanvas").GetComponent<Canvas>();//TODO
+        if (uiCanvas == null)
+        {
+            uiCanvas = UIMgr.Ins.UICanvas;
+        }
         Camera uiCamera = uiCanvas.worldCamera;
         if (uiCanvas.renderMode == RenderMode.ScreenSpaceOverlay)//transform.position = 屏幕坐标
         {
