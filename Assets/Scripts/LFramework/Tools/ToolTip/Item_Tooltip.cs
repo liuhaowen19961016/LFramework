@@ -36,7 +36,7 @@ public class Item_Tooltip : MonoBehaviour
     public void Set(TooltipData data)
     {
         m_Data = data;
-        m_UICanvas = GameObject.Find("Canvas").GetComponent<Canvas>();
+        m_UICanvas = GameObject.Find("Canvas").GetComponent<Canvas>();//TODO
 
         CalcShowRectBorder();
         CalcDirType();
@@ -122,7 +122,7 @@ public class Item_Tooltip : MonoBehaviour
             }
             rect_sv_custom.GetComponent<ScrollRect>().content = m_Data.customGo.GetComponent<RectTransform>();
             m_Data.customGo.transform.SetParent(rect_sv_custom.GetComponent<ScrollRect>().viewport.transform, false);
-            m_Data.customGo.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
+            m_Data.customGo.GetComponent<RectTransform>().localPosition = Vector2.zero;
             m_Data.customGo.transform.localScale = Vector3.one;
             rect_sv_custom.SetRectSize(m_Data.customGoSize);
             rect_custom.SetRectSize(m_Data.customGoSize);
@@ -154,7 +154,7 @@ public class Item_Tooltip : MonoBehaviour
     /// </summary>
     void RefreshPos()
     {
-        GetComponent<RectTransform>().anchoredPosition = CTUtils.World2UI(m_Data.pos, TooltipMgr.Ins.ParentRect);
+        GetComponent<RectTransform>().localPosition = CTUtils.Screen2UILocal(CTUtils.UIWorld2Screen(m_Data.pos, m_UICanvas.worldCamera), TooltipMgr.Ins.ParentRect, m_UICanvas.worldCamera);
 
         float bgOffset = m_Data.offset;
         float arrowOffset = 0;
@@ -167,10 +167,10 @@ public class Item_Tooltip : MonoBehaviour
                     bgOffset += rect_arrow.rect.height / 2;
                     arrowOffset += rect_bg.rect.height / 2;
                     arrowOffset += rect_arrow.rect.height / 2;
-                    rect_arrow.anchoredPosition += Vector2.down * arrowOffset;
+                    rect_arrow.localPosition += Vector3.down * arrowOffset;
                     RefreshArrow();
                 }
-                rect_pos.anchoredPosition += Vector2.up * bgOffset;
+                rect_pos.localPosition += Vector3.up * bgOffset;
                 break;
             case TooltipData.EDirType.Down:
                 bgOffset += rect_bg.rect.height / 2;
@@ -179,10 +179,10 @@ public class Item_Tooltip : MonoBehaviour
                     bgOffset += rect_arrow.rect.height / 2;
                     arrowOffset += rect_bg.rect.height / 2;
                     arrowOffset += rect_arrow.rect.height / 2;
-                    rect_arrow.anchoredPosition += Vector2.up * arrowOffset;
+                    rect_arrow.localPosition += Vector3.up * arrowOffset;
                     RefreshArrow();
                 }
-                rect_pos.anchoredPosition += Vector2.down * bgOffset;
+                rect_pos.localPosition += Vector3.down * bgOffset;
                 break;
             case TooltipData.EDirType.Left:
                 bgOffset += rect_bg.rect.width / 2;
@@ -191,10 +191,10 @@ public class Item_Tooltip : MonoBehaviour
                     bgOffset += rect_arrow.rect.width / 2;
                     arrowOffset += rect_bg.rect.width / 2;
                     arrowOffset += rect_arrow.rect.width / 2;
-                    rect_arrow.anchoredPosition += Vector2.right * arrowOffset;
+                    rect_arrow.localPosition += Vector3.right * arrowOffset;
                     RefreshArrow();
                 }
-                rect_pos.anchoredPosition += Vector2.left * bgOffset;
+                rect_pos.localPosition += Vector3.left * bgOffset;
                 break;
             case TooltipData.EDirType.Right:
                 bgOffset += rect_bg.rect.width / 2;
@@ -203,10 +203,10 @@ public class Item_Tooltip : MonoBehaviour
                     bgOffset += rect_arrow.rect.width / 2;
                     arrowOffset += rect_bg.rect.width / 2;
                     arrowOffset += rect_arrow.rect.width / 2;
-                    rect_arrow.anchoredPosition += Vector2.left * arrowOffset;
+                    rect_arrow.localPosition += Vector3.left * arrowOffset;
                     RefreshArrow();
                 }
-                rect_pos.anchoredPosition += Vector2.right * bgOffset;
+                rect_pos.localPosition += Vector3.right * bgOffset;
                 break;
             default:
                 break;
@@ -218,22 +218,22 @@ public class Item_Tooltip : MonoBehaviour
     /// <summary>
     /// 刷新箭头
     /// </summary>
-    /// 美术素材的箭头是朝左的情况下可以用下面的逻辑设置方向
+    /// 美术素材的箭头是朝右的情况下可以用下面的逻辑设置方向
     void RefreshArrow()
     {
         switch (m_Data.dirType)
         {
             case TooltipData.EDirType.Up:
-                rect_arrow.eulerAngles = new Vector3(0, 0, 90);
-                break;
-            case TooltipData.EDirType.Down:
                 rect_arrow.eulerAngles = new Vector3(0, 0, -90);
                 break;
+            case TooltipData.EDirType.Down:
+                rect_arrow.eulerAngles = new Vector3(0, 0, 90);
+                break;
             case TooltipData.EDirType.Left:
-                rect_arrow.eulerAngles = new Vector3(0, 0, 180);
+                rect_arrow.eulerAngles = new Vector3(0, 0, 0);
                 break;
             case TooltipData.EDirType.Right:
-                rect_arrow.eulerAngles = new Vector3(0, 0, 0);
+                rect_arrow.eulerAngles = new Vector3(0, 0, 180);
                 break;
             default:
                 break;
@@ -249,22 +249,22 @@ public class Item_Tooltip : MonoBehaviour
         switch (m_Data.dirType)
         {
             case TooltipData.EDirType.Up:
-                pivot = new Vector2((rect_arrow.anchoredPosition.x + rect_bg.rect.width / 2) / rect_bg.rect.width, 0f);
+                pivot = new Vector2((rect_arrow.localPosition.x + rect_bg.rect.width / 2) / rect_bg.rect.width, 0f);
                 break;
             case TooltipData.EDirType.Down:
-                pivot = new Vector2((rect_arrow.anchoredPosition.x + rect_bg.rect.width / 2) / rect_bg.rect.width, 1f);
+                pivot = new Vector2((rect_arrow.localPosition.x + rect_bg.rect.width / 2) / rect_bg.rect.width, 1f);
                 break;
             case TooltipData.EDirType.Left:
-                pivot = new Vector2(1f, (rect_arrow.anchoredPosition.y + rect_bg.rect.height / 2) / rect_bg.rect.height);
+                pivot = new Vector2(1f, (rect_arrow.localPosition.y + rect_bg.rect.height / 2) / rect_bg.rect.height);
                 break;
             case TooltipData.EDirType.Right:
-                pivot = new Vector2(0f, (rect_arrow.anchoredPosition.y + rect_bg.rect.height / 2) / rect_bg.rect.height);
+                pivot = new Vector2(0f, (rect_arrow.localPosition.y + rect_bg.rect.height / 2) / rect_bg.rect.height);
                 break;
             default:
                 break;
         }
         rect_pos.pivot = pivot;
-        rect_pos.anchoredPosition += new Vector2(rect_bg.rect.width * (pivot.x - 0.5f), rect_bg.rect.height * (pivot.y - 0.5f));
+        rect_pos.localPosition += new Vector3(rect_bg.rect.width * (pivot.x - 0.5f), rect_bg.rect.height * (pivot.y - 0.5f));
     }
 
     /// <summary>
@@ -279,37 +279,37 @@ public class Item_Tooltip : MonoBehaviour
         if (m_Data.dirType == TooltipData.EDirType.Up
             || m_Data.dirType == TooltipData.EDirType.Down)
         {
-            float bgCornerRight = CTUtils.World2UI(bgCorners[3], m_UICanvas.GetComponent<RectTransform>()).x;
-            float bgCornerLeft = CTUtils.World2UI(bgCorners[0], m_UICanvas.GetComponent<RectTransform>()).x;
+            float bgCornerRight = CTUtils.Screen2UILocal(CTUtils.UIWorld2Screen(bgCorners[3], m_UICanvas.worldCamera), m_UICanvas.GetComponent<RectTransform>(), m_UICanvas.worldCamera).x;
+            float bgCornerLeft = CTUtils.Screen2UILocal(CTUtils.UIWorld2Screen(bgCorners[0], m_UICanvas.worldCamera), m_UICanvas.GetComponent<RectTransform>(), m_UICanvas.worldCamera).x;
             if (bgCornerRight > m_ShowRectBorder[3])
             {
                 float offset = bgCornerRight - m_ShowRectBorder[3];
-                rect_pos.anchoredPosition += Vector2.left * offset;
-                rect_arrow.anchoredPosition += Vector2.right * offset;
+                rect_pos.localPosition += Vector3.left * offset;
+                rect_arrow.localPosition += Vector3.right * offset;
             }
             else if (bgCornerLeft < m_ShowRectBorder[2])
             {
                 float offset = m_ShowRectBorder[2] - bgCornerLeft;
-                rect_pos.anchoredPosition += Vector2.right * offset;
-                rect_arrow.anchoredPosition += Vector2.left * offset;
+                rect_pos.localPosition += Vector3.right * offset;
+                rect_arrow.localPosition += Vector3.left * offset;
             }
         }
         else if (m_Data.dirType == TooltipData.EDirType.Left
             || m_Data.dirType == TooltipData.EDirType.Right)
         {
-            float bgCornerUp = CTUtils.World2UI(bgCorners[1], m_UICanvas.GetComponent<RectTransform>()).y;
-            float bgCornerDown = CTUtils.World2UI(bgCorners[0], m_UICanvas.GetComponent<RectTransform>()).y;
+            float bgCornerUp = CTUtils.Screen2UILocal(CTUtils.UIWorld2Screen(bgCorners[1], m_UICanvas.worldCamera), m_UICanvas.GetComponent<RectTransform>(), m_UICanvas.worldCamera).y;
+            float bgCornerDown = CTUtils.Screen2UILocal(CTUtils.UIWorld2Screen(bgCorners[0], m_UICanvas.worldCamera), m_UICanvas.GetComponent<RectTransform>(), m_UICanvas.worldCamera).y;
             if (bgCornerUp > m_ShowRectBorder[0])
             {
                 float offset = bgCornerUp - m_ShowRectBorder[0];
-                rect_pos.anchoredPosition += Vector2.down * offset;
-                rect_arrow.anchoredPosition += Vector2.up * offset;
+                rect_pos.localPosition += Vector3.down * offset;
+                rect_arrow.localPosition += Vector3.up * offset;
             }
             else if (bgCornerDown < m_ShowRectBorder[1])
             {
                 float offset = m_ShowRectBorder[1] - bgCornerDown;
-                rect_pos.anchoredPosition += Vector2.up * offset;
-                rect_arrow.anchoredPosition += Vector2.down * offset;
+                rect_pos.localPosition += Vector3.up * offset;
+                rect_arrow.localPosition += Vector3.down * offset;
             }
         }
     }
@@ -327,10 +327,10 @@ public class Item_Tooltip : MonoBehaviour
 
         Vector3[] showRectCorners = new Vector3[4];
         m_Data.showRect.GetWorldCorners(showRectCorners);
-        m_ShowRectBorder[0] = CTUtils.World2UI(showRectCorners[1], m_UICanvas.GetComponent<RectTransform>()).y;
-        m_ShowRectBorder[1] = CTUtils.World2UI(showRectCorners[0], m_UICanvas.GetComponent<RectTransform>()).y;
-        m_ShowRectBorder[2] = CTUtils.World2UI(showRectCorners[0], m_UICanvas.GetComponent<RectTransform>()).x;
-        m_ShowRectBorder[3] = CTUtils.World2UI(showRectCorners[3], m_UICanvas.GetComponent<RectTransform>()).x;
+        m_ShowRectBorder[0] = CTUtils.Screen2UILocal(CTUtils.UIWorld2Screen(showRectCorners[1], m_UICanvas.worldCamera), m_UICanvas.GetComponent<RectTransform>(), m_UICanvas.worldCamera).y;
+        m_ShowRectBorder[1] = CTUtils.Screen2UILocal(CTUtils.UIWorld2Screen(showRectCorners[0], m_UICanvas.worldCamera), m_UICanvas.GetComponent<RectTransform>(), m_UICanvas.worldCamera).y;
+        m_ShowRectBorder[2] = CTUtils.Screen2UILocal(CTUtils.UIWorld2Screen(showRectCorners[0], m_UICanvas.worldCamera), m_UICanvas.GetComponent<RectTransform>(), m_UICanvas.worldCamera).x;
+        m_ShowRectBorder[3] = CTUtils.Screen2UILocal(CTUtils.UIWorld2Screen(showRectCorners[3], m_UICanvas.worldCamera), m_UICanvas.GetComponent<RectTransform>(), m_UICanvas.worldCamera).x;
     }
 
     /// <summary>
@@ -346,7 +346,7 @@ public class Item_Tooltip : MonoBehaviour
 
         float showRectWidth = m_ShowRectBorder[3] - m_ShowRectBorder[2];
         float showRectHeight = m_ShowRectBorder[0] - m_ShowRectBorder[1];
-        Vector2 tooltipUIPos = CTUtils.World2UI(m_Data.pos, m_UICanvas.GetComponent<RectTransform>());
+        Vector2 tooltipUIPos = CTUtils.Screen2UILocal(CTUtils.UIWorld2Screen(m_Data.pos, m_UICanvas.worldCamera), m_UICanvas.GetComponent<RectTransform>(), m_UICanvas.worldCamera);
         float borderToUpRatio = (m_ShowRectBorder[0] - tooltipUIPos.y) / showRectHeight;
         float borderToDownRatio = (tooltipUIPos.y - m_ShowRectBorder[1]) / showRectHeight;
         float borderToLeftRatio = (tooltipUIPos.x - m_ShowRectBorder[2]) / showRectWidth;
