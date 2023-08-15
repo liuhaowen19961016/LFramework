@@ -82,57 +82,45 @@ public static class CTUtils
     /// <summary>
     /// 屏幕坐标转UI局部坐标
     /// </summary>
-    public static Vector2 Screen2UI(Vector2 screenPos, RectTransform rect, Camera uiCamera = null)
+    public static Vector2 Screen2UILocal(Vector2 screenPos, RectTransform rect, Camera uiCamera = null)
     {
-        if (uiCamera == null)
-        {
-            uiCamera = UIMgr.Ins.UICamera;
-        }
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(rect, screenPos, uiCamera, out Vector2 uiPos);
-        return uiPos;
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(rect, screenPos, uiCamera, out Vector2 uiLocalPos);
+        return uiLocalPos;
     }
 
     /// <summary>
-    /// 世界坐标转UI坐标
+    /// 世界坐标转UI局部坐标
     /// </summary>
-    public static Vector2 World2UI(Vector3 worldPos, RectTransform rect, Camera worldCamera = null)
+    public static Vector2 World2UILocal(Vector3 worldPos, RectTransform rect, Camera worldCamera = null, Camera uiCamera = null)
     {
         Vector2 screenPos = World2Screen(worldPos, worldCamera);
-        return Screen2UI(screenPos, rect);
+        Vector2 uiLocalPos = Screen2UILocal(screenPos, rect, uiCamera);
+        return uiLocalPos;
     }
 
     /// <summary>
     /// UI世界坐标转屏幕坐标
     /// </summary>
-    public static Vector2 UIWorld2Screen(Vector3 v, Canvas uiCanvas = null)
+    public static Vector2 UIWorld2Screen(Vector3 worldPos, Camera uiCamera = null)
     {
-        if (uiCanvas == null)
-        {
-            uiCanvas = UIMgr.Ins.UICanvas;
-        }
-        Camera uiCamera = uiCanvas.worldCamera;
-        if (uiCanvas.renderMode == RenderMode.ScreenSpaceOverlay)//transform.position = 屏幕坐标
-        {
-            return v;
-        }
-        else if (uiCanvas.renderMode == RenderMode.ScreenSpaceCamera)
-        {
-            return World2Screen(v, uiCamera);
-        }
-        else if (uiCanvas.renderMode == RenderMode.WorldSpace)
-        {
-            return World2Screen(v, uiCamera);
-        }
-        return Vector2.zero;
+        Vector2 screenPos = RectTransformUtility.WorldToScreenPoint(uiCamera, worldPos);
+        return screenPos;
     }
 
     /// <summary>
-    /// UI世界坐标转世界坐标
+    /// UI局部坐标转UI锚点坐标
     /// </summary>
-    public static Vector3 UIWorld2World(Vector2 v)
+    public static Vector2 UILocal2UIAnchor(Vector2 localPos, RectTransform parentRect, RectTransform rect)
     {
-        Vector2 screenPos = UIWorld2Screen(v);
-        return Screen2World(screenPos);
+        Vector2 anchorMinPos = parentRect.rect.min + Vector2.Scale(rect.anchorMin, parentRect.rect.size);
+        Vector2 rectMinPos = rect.rect.min + localPos;
+        Vector2 offsetMin = rectMinPos - anchorMinPos;
+        Vector2 anchorMaxPos = parentRect.rect.max - Vector2.Scale(Vector2.one - rect.anchorMax, parentRect.rect.size);
+        Vector2 rectMaxPos = rect.rect.max + localPos;
+        Vector2 offsetMax = rectMaxPos - anchorMaxPos;
+        Vector2 sizeDelta = offsetMax - offsetMin;
+        Vector2 anchoredPosition = offsetMin + Vector2.Scale(sizeDelta, rect.pivot);
+        return anchoredPosition;
     }
 
     #endregion UI相关
