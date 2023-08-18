@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -9,6 +9,13 @@ using UnityEngine.UI;
 /// </summary>
 public class BaseUI : MonoBehaviour
 {
+    protected object m_Data;
+
+    public void Init(object data)
+    {
+        this.m_Data = data;
+    }
+
     /// <summary>
     /// 打开UI时
     /// </summary>
@@ -115,7 +122,7 @@ public class UIMgr : MonoSingleton<UIMgr>
     /// <summary>
     /// 显示界面
     /// </summary>
-    public void Show(string uiPath)
+    public void Show(string uiPath, object data = null)
     {
         if (m_UICache.TryGetValue(uiPath, out UIInfo outUIInfo))
         {
@@ -129,6 +136,7 @@ public class UIMgr : MonoSingleton<UIMgr>
             {
                 outUIInfo = new UIInfo { go = uiGo };
                 m_UICache.Add(uiPath, outUIInfo);
+                outUIInfo.go.GetComponent<BaseUI>().Init(data);
                 outUIInfo.go.GetComponent<BaseUI>().OnView();
             }
         }
@@ -190,7 +198,7 @@ public class UIMgr : MonoSingleton<UIMgr>
     /// <summary>
     /// 获取UI层级节点
     /// </summary>
-    private Transform GetUILayerTrans(EUILayer uILayer)
+    public Transform GetUILayerTrans(EUILayer uILayer)
     {
         if (m_Layer2Trans.TryGetValue(uILayer, out Transform outTrans))
         {
@@ -266,7 +274,7 @@ public class UIMgr : MonoSingleton<UIMgr>
         m_UICamera.cullingMask = 1 << 5;//TODO：根据不同项目设置
         m_UICamera.orthographic = true;
         m_UICamera.depth = 0;//TODO：根据不同项目设置
-        //m_UICamera.orthographicSize = Camera.main.orthographicSize;
+                             //m_UICamera.orthographicSize = Camera.main.orthographicSize;
         DontDestroyOnLoad(cameraGo);
     }
 
