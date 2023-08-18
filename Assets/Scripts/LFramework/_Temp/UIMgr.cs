@@ -145,7 +145,7 @@ public class UIMgr : MonoSingleton<UIMgr>
     /// <summary>
     /// 关闭界面
     /// </summary>
-    public bool Close(string uiPath, bool isDestroy = false)
+    public bool Close(string uiPath, bool isDestroy = true)
     {
         if (m_UICache.TryGetValue(uiPath, out UIInfo outUIInfo))
         {
